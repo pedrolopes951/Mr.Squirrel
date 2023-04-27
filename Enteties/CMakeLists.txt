@@ -2,9 +2,12 @@
 set(SOURCES 
     Enteties.cpp)
 
+
+include_directories(${CMAKE_SOURCE_DIR}/PreCompiledHeader)
+
 # Create library
 add_library(Enteties ${SOURCES})
 
 
 # Link SFML libraries
-target_link_libraries(Enteties PUBLIC MyPCH ${SFML_LIBS} MyPCH)
+target_link_libraries(Enteties PUBLIC MyPCH ${SFML_LIBS})

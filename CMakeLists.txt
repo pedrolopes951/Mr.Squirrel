@@ -45,10 +45,6 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/Textures
     DESTINATION ${CMAKE_INSTALL_PREFIX}
 )  
 
-add_definitions(-DTexturesPATH="${CMAKE_BINARY_DIR}/Textures/")
-add_definitions(-DFONTPATH="${CMAKE_BINARY_DIR}/Fonts/")
-
-
 
 # Create the precompiled header
 set(PCH_HEADER "PreCompiledHeader/stdafx.hpp")

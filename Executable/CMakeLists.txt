@@ -4,6 +4,8 @@ set(SOURCES
 
 include_directories(${CMAKE_SOURCE_DIR}/PreCompiledHeader)
 include_directories(${CMAKE_SOURCE_DIR}/Engine)
+include_directories(${CMAKE_SOURCE_DIR}/Enteties)
+
 
 
 # Create executable

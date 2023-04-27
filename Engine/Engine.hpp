@@ -1,13 +1,33 @@
 #include "stdafx.hpp"
-#include "SFML/Graphics.hpp"
+#include "Enteties.hpp"
+#include "SFML/Graphics.hpp" 
 #include "SFML/Window.hpp"
 
 class Engine
 {
-private:
-    sf::Window* m_window;
+
 public:
     Engine(int size_x, int size_y,std::string name_window);
+    void updatePollEvents();
     void run();
     ~Engine();
+private:
+    // Main window of the Game
+    sf::RenderWindow* m_window;
+    int m_size_window_x;
+    int m_size_window_y;
+    std::string m_name_window;
+    void InitWindow();
+
+    //Map  
+    Map::MapTextures *m_map_game;
+    void InitMap();   
+    // Main Events of the game
+    sf::Event m_events;
+
+    // Render Function
+    void render(); 
+
+    // Update Function
+    void update();
 };
