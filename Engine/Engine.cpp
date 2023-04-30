@@ -4,12 +4,20 @@ Engine::Engine(int size_x, int size_y, std::string name_window) : m_size_window_
 {
     this->InitWindow();
     this->InitMap();
+    this->InitFloor();
 }
 
 void Engine::InitMap()
 {
     std::vector<std::string> path_text{TexturesPATH + std::string("building no. 1.png"),TexturesPATH + std::string("building no. 2.png"),TexturesPATH + std::string("building 3.png")};
-    m_map_game = new Map::MapTextures(path_text);
+    m_map_game = new Map::MapBackground(path_text);
+}
+
+void Engine::InitFloor()
+{
+    std::map<Map::FloorType,const std::string> floor_text;
+    floor_text.insert(std::pair<Map::FloorType,std::string>(Map::FloorType::GRASSDIRT,std::string(TexturesPATH + std::string("grass-dirt.png"))));
+    m_floor_game = new Map::Floor(floor_text);
 }
 
 void Engine::InitWindow()
@@ -42,7 +50,10 @@ void Engine::updatePollEvents()
 
 void Engine::render()
 {
+    m_window->clear(sf::Color::Cyan);
+
     m_map_game->DrawMap(m_window);
+    m_floor_game->DrawFloor(Map::FloorType::GRASSDIRT,m_window);
     m_window->display();
 }
 
@@ -53,5 +64,7 @@ void Engine::update()
 
 Engine::~Engine()
 {
+    delete m_floor_game;
+    delete m_map_game;
     delete m_window;
 }

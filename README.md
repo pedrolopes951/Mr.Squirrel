@@ -15,12 +15,13 @@
     1. Set up a game loop that will continuously update the game world and render it on the screen 
     2. Create data structures for the game objects, such as the main character, enemies, and platforms :
        1. Player 
+            1. Draw the player
+            2. 
        2. Maps:
             1. London
                1. City Map
                2. Grass Tile floor
-               3. Set Views for the maps 
-               
+               3. Set Views for the maps (Only after I have a player to set the view )
             2. Lisbon
             3. Albufeira
        3. Enemies:

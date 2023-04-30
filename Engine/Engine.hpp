@@ -20,8 +20,13 @@ private:
     void InitWindow();
 
     //Map  
-    Map::MapTextures *m_map_game;
+    Map::MapBackground *m_map_game;
     void InitMap();   
+
+    //Floor
+    Map::Floor *m_floor_game;
+    void InitFloor();
+        
     // Main Events of the game
     sf::Event m_events;
 
