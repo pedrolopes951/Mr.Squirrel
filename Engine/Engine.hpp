@@ -25,6 +25,7 @@ private:
 
     //Floor
     Map::Floor *m_floor_game;
+    std::vector<sf::Sprite> m_floor_tiles;
     void InitFloor();
         
     // Main Events of the game

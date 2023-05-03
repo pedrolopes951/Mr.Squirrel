@@ -17,7 +17,9 @@ void Engine::InitFloor()
 {
     std::map<Map::FloorType,const std::string> floor_text;
     floor_text.insert(std::pair<Map::FloorType,std::string>(Map::FloorType::GRASSDIRT,std::string(TexturesPATH + std::string("grass-dirt.png"))));
-    m_floor_game = new Map::Floor(floor_text);
+    m_floor_game = new Map::Floor(floor_text,50.f,50.f);
+    m_floor_tiles = Map::Floor::getGrid(*m_floor_game);
+    // TODO: Create .h to log global const like size of tiles
 }
 
 void Engine::InitWindow()
@@ -53,7 +55,10 @@ void Engine::render()
     m_window->clear(sf::Color::Cyan);
 
     m_map_game->DrawMap(m_window);
-    m_floor_game->DrawFloor(Map::FloorType::GRASSDIRT,m_window);
+    for(auto &tile : m_floor_tiles)
+    {
+        m_window->draw(tile);
+    }
     m_window->display();
 }
 
