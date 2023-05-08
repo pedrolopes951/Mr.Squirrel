@@ -16,6 +16,7 @@ set(SFML_LIBS sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 add_subdirectory(Engine)
 add_subdirectory(Enteties)
 add_subdirectory(Executable)
+add_subdirectory(Player)
 
 
 

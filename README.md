@@ -15,7 +15,7 @@
     1. Set up a game loop that will continuously update the game world and render it on the screen 
     2. Create data structures for the game objects, such as the main character, enemies, and platforms :
        1. Player 
-            1. Draw the player
+            1. Draw the player ()
             2. 
        2. Maps:
             1. London
@@ -39,4 +39,6 @@
 
 ## Story Line
 The quest of a player, super-mario, side scrolling on a map of a city, running, jumpping and fighting enemies to rescue a squirell in the end of each level.
+
+Player - Must have a health bar, Damage Points, must jump, must be able to go back and forward, side scrolling in the game map. Drawn in a pixel app, for now simple only one view.
 
