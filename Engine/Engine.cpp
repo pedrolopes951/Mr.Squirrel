@@ -5,6 +5,7 @@ Engine::Engine(int size_x, int size_y, std::string name_window) : m_size_window_
     this->InitWindow();
     this->InitMap();
     this->InitFloor();
+    this->InitPlayer();
 }
 
 void Engine::InitMap()
@@ -19,7 +20,12 @@ void Engine::InitFloor()
     floor_text.insert(std::pair<Map::FloorType,std::string>(Map::FloorType::GRASSDIRT,std::string(TexturesPATH + std::string("grass-dirt.png"))));
     m_floor_game = new Map::Floor(floor_text,50.f,50.f);
     m_floor_tiles = Map::Floor::getGrid(*m_floor_game);
-    // TODO: Create .h to log global const like size of tiles
+}
+
+void Engine::InitPlayer()
+{
+    std::array<std::string,2> load_texture = {std::string(TexturesPATH)+ std::string("PlayerTextures/StopRight.png"),std::string(TexturesPATH)+ std::string("PlayerTextures/StopLeft.png")}; // TODO : LOAD Rest of textures
+    m_main_player = new Player(load_texture,sf::Vector2f(m_window->getSize().x/2,m_window->getSize().x/2));
 }
 
 void Engine::InitWindow()
@@ -30,10 +36,12 @@ void Engine::InitWindow()
 
 void Engine::run()
 {
+    sf::Clock clock;
     while (m_window->isOpen())
     {
+        sf::Time elapsed = clock.restart();
         this->updatePollEvents();
-        this->update();
+        this->update(elapsed);
         this->render();    
     }
     
@@ -59,11 +67,13 @@ void Engine::render()
     {
         m_window->draw(tile);
     }
+    m_main_player->render(m_window);
     m_window->display();
 }
 
-void Engine::update()
+void Engine::update(sf::Time& elapsed_time)
 {
+    m_main_player->update(elapsed_time);
 }
 
 
@@ -71,5 +81,6 @@ Engine::~Engine()
 {
     delete m_floor_game;
     delete m_map_game;
+    delete m_main_player;
     delete m_window;
 }

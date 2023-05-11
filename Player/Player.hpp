@@ -2,6 +2,7 @@
 #include "stdafx.hpp"
 #include "SFML/Graphics.hpp"
 
+constexpr int PLAYEDIM = 32;
 
 
 enum class PlayerDir
@@ -18,11 +19,15 @@ enum class PlayerDir
     LANDLEFT
 };
 
+
 class Player
 {
 public:
-    Player(const std::array<std::string,10>& textures_array,sf::Vector2f position);
+    Player(const std::array<std::string,2>& textures_array,sf::Vector2f position);
     ~Player();
+
+    void render(sf::RenderWindow* window);
+    void update(sf::Time& elapsed_time);
 
 private:
     int m_health;
@@ -33,9 +38,8 @@ private:
 
     // Vector which will hold the position of the player texture
     std::map<PlayerDir,sf::Texture> m_texture;
-    void InitTexture(const std::array<std::string,10>& textures_array);
-
-    sf::Sprite m_sprite; // JUst one Sprite to 
+    std::map<PlayerDir,sf::Sprite> m_sprites;
+    void InitTextureSprite(const std::array<std::string,2>& textures_array);
 
     // Position PLayer
     sf::Vector2f m_position;

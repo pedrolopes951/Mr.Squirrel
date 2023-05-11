@@ -1,5 +1,6 @@
 #include "stdafx.hpp"
 #include "Enteties.hpp"
+#include "Player.hpp"
 #include "SFML/Graphics.hpp" 
 #include "SFML/Window.hpp"
 
@@ -27,6 +28,10 @@ private:
     Map::Floor *m_floor_game;
     std::vector<sf::Sprite> m_floor_tiles;
     void InitFloor();
+
+    // Player
+    Player* m_main_player;
+    void InitPlayer();
         
     // Main Events of the game
     sf::Event m_events;
@@ -35,5 +40,5 @@ private:
     void render(); 
 
     // Update Function
-    void update();
+    void update(sf::Time& elapsed_time);
 };

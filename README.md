@@ -16,6 +16,7 @@
     2. Create data structures for the game objects, such as the main character, enemies, and platforms :
        1. Player 
             1. Draw the player ()
+                1. Sprite is going to be 96/3x128/4 = 32 X 32
             2. 
        2. Maps:
             1. London
