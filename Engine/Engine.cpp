@@ -24,8 +24,7 @@ void Engine::InitFloor()
 
 void Engine::InitPlayer()
 {
-    std::array<std::string,2> load_texture = {std::string(TexturesPATH)+ std::string("PlayerTextures/StopRight.png"),std::string(TexturesPATH)+ std::string("PlayerTextures/StopLeft.png")}; // TODO : LOAD Rest of textures
-    m_main_player = new Player(load_texture,sf::Vector2f(m_window->getSize().x/2,m_window->getSize().x/2));
+    m_main_player = new Player(std::string(TexturesPATH + std::string("Main_Player.png")),sf::Vector2f(m_window->getSize().x/2,m_window->getSize().x/2));
 }
 
 void Engine::InitWindow()
