@@ -40,16 +40,20 @@ private:
     int m_health_max;
     float m_speed;
     float m_distance; // Distance by player
+    float m_gravity;
+  
     void InitVariables();
 
     // Vector which will hold the position of the player texture
     sf::Texture m_texture;
     std::map<PlayerDir,sf::Sprite> m_sprites;
     sf::Sprite m_drawn_sprite;
+    sf::Vector2f m_position;
+    
+    // FUnctions
+    void UpdatePhysics(sf::Time &elapsed_time);
     void InitTextureSprite(const std::string& textures_path);
     void ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir);
 
-    // Position PLayer
-    sf::Vector2f m_position;
 
 };
