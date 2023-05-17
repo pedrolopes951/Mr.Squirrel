@@ -110,14 +110,10 @@ void Player::update(sf::Time &elapsed_time)
             m_drawn_sprite = m_sprites.at(PlayerDir::STILLRIGHT);
         }
     }
-    auto update_sprites_curr_pos = [&]()
+    for (auto &i : m_sprites)
     {
-        for (auto &i : m_sprites)
-        {
-            i.second.setPosition(position);
-        }
-    };
-    update_sprites_curr_pos();
+        i.second.setPosition(position);
+    }
 }
 
 Player::~Player()
