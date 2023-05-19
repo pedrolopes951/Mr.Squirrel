@@ -12,10 +12,12 @@ void Player::InitVariables()
     m_health_max = 10;
     m_health = m_health_max;
     m_speed = 100.0f;
+    m_verticalVelocity = 0.f;
     m_move_left_stepr = false;
     m_move_right_stepr = false;
     m_look_left = false;
     m_gravity = 4.0f;
+    m_maxfallspeed = 20.f;
 }
 
 void Player::InitTextureSprite(const std::string &textures_path)
@@ -38,7 +40,10 @@ void Player::InitTextureSprite(const std::string &textures_path)
 
 void Player::UpdatePhysics(sf::Time &elapsed_time)
 {
-    m_distance = m_gravity * elapsed_time.asSeconds();
+    m_verticalVelocity = m_gravity * elapsed_time.asSeconds();
+    if(m_verticalVelocity > m_maxfallspeed)
+        m_verticalVelocity = m_maxfallspeed;
+    m_position.y += m_distance;
 
 }
 
@@ -59,6 +64,7 @@ void Player::render(sf::RenderWindow *window)
 
 void Player::update(sf::Time &elapsed_time)
 {
+    UpdatePhysics(elapsed_time);
     m_distance = m_speed * elapsed_time.asSeconds(); // Dsitance based on the elapsed time of each frame
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
@@ -120,6 +126,17 @@ void Player::update(sf::Time &elapsed_time)
     {
         i.second.setPosition(m_position);
     }
+}
+
+const sf::FloatRect Player::GetGlobalBounds() const
+{
+
+    return m_drawn_sprite.getGlobalBounds();
+}
+
+void Player::SetPosition(sf::Vector2f position)
+{
+    m_position = position;
 }
 
 Player::~Player()

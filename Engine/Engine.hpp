@@ -41,4 +41,5 @@ private:
 
     // Update Function
     void update(sf::Time& elapsed_time);
+    void updateColision();
 };

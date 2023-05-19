@@ -29,6 +29,11 @@ public:
     void render(sf::RenderWindow* window);
     void update(sf::Time& elapsed_time);
 
+    // Getter
+    const sf::FloatRect GetGlobalBounds() const;  
+    // Setter
+    void SetPosition(sf::Vector2f position);
+
 private:
 
     // Variables to move sprite
@@ -38,9 +43,11 @@ private:
 
     int m_health;
     int m_health_max;
+    float m_verticalVelocity;
     float m_speed;
     float m_distance; // Distance by player
     float m_gravity;
+    float m_maxfallspeed;
   
     void InitVariables();
 
@@ -50,7 +57,7 @@ private:
     sf::Sprite m_drawn_sprite;
     sf::Vector2f m_position;
     
-    // FUnctions
+    // Functions
     void UpdatePhysics(sf::Time &elapsed_time);
     void InitTextureSprite(const std::string& textures_path);
     void ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir);

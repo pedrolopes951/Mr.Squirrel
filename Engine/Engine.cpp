@@ -75,6 +75,9 @@ void Engine::update(sf::Time& elapsed_time)
     m_main_player->update(elapsed_time);
 }
 
+void Engine::updateColision()
+{
+}
 
 Engine::~Engine()
 {
