@@ -21,7 +21,7 @@ void Player::InitVariables()
 }
 
 void Player::InitTextureSprite(const std::string &textures_path)
- {
+{
     if (m_texture.loadFromFile(textures_path))
     {
         ParsePlayerSprite(0, 0, PlayerDir::STILLLEFT);
@@ -41,10 +41,9 @@ void Player::InitTextureSprite(const std::string &textures_path)
 void Player::UpdatePhysics(sf::Time &elapsed_time)
 {
     m_verticalVelocity = m_gravity * elapsed_time.asSeconds();
-    if(m_verticalVelocity > m_maxfallspeed)
+    if (m_verticalVelocity > m_maxfallspeed)
         m_verticalVelocity = m_maxfallspeed;
     m_position.y += m_verticalVelocity;
-
 }
 
 void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
@@ -71,14 +70,14 @@ void Player::update(sf::Time &elapsed_time)
         if (m_move_right_stepr)
         {
             m_position.x += m_horizontalVelocity;
+            m_move_right_stepr = false;
             m_sprites.at(PlayerDir::WALKRIGHTLEFT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::WALKRIGHTLEFT);
-            m_move_right_stepr = false;
         }
         else
         {
             m_position.x += m_horizontalVelocity;
-            m_sprites.at(PlayerDir::WALKRIGHTLEFT).setPosition(m_position);
+            m_sprites.at(PlayerDir::WALKRIGHTRIGHT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::WALKRIGHTRIGHT);
             m_move_right_stepr = true;
         }
@@ -104,9 +103,18 @@ void Player::update(sf::Time &elapsed_time)
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        m_position.y -= m_horizontalVelocity;
-        m_sprites.at(PlayerDir::JUMPRIGHT).setPosition(m_position);
-        m_drawn_sprite = m_sprites.at(PlayerDir::JUMPRIGHT);
+        if (m_look_left)
+        {
+            m_position.y -= m_horizontalVelocity;
+            m_sprites.at(PlayerDir::JUMPLEFT).setPosition(m_position);
+            m_drawn_sprite = m_sprites.at(PlayerDir::JUMPLEFT);
+        }
+        else
+        {
+            m_position.y -= m_horizontalVelocity;
+            m_sprites.at(PlayerDir::JUMPRIGHT).setPosition(m_position);
+            m_drawn_sprite = m_sprites.at(PlayerDir::JUMPRIGHT);
+        }
     }
     else
     {
@@ -137,6 +145,11 @@ const sf::FloatRect Player::GetGlobalBounds() const
 const sf::Vector2f Player::GetPosition() const
 {
     return m_position;
+}
+
+const float Player::GetHorizontalVelocity() const
+{
+    return m_horizontalVelocity;
 }
 
 void Player::SetPosition(sf::Vector2f position)

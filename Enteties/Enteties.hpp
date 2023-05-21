@@ -1,4 +1,5 @@
 #include "stdafx.hpp"
+
 #include "SFML/Graphics.hpp"
 
 namespace Map
@@ -21,6 +22,7 @@ namespace Map
         void DrawMap(sf::RenderWindow *window);
        
         std::vector<sf::Sprite *> m_map_sprite;
+        std::vector<sf::Sprite> m_map_sprite_copy;
         std::vector<sf::Texture *> m_map_texture;
         void createSprite();
     };

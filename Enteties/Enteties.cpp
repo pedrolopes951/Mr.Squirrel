@@ -35,6 +35,13 @@ namespace Map
             sf::Sprite *sprite = new sf::Sprite(*i);
             m_map_sprite.push_back(sprite);
         }
+        // Create copies of the sprites
+        sf::Sprite copy;
+        for (const auto &sprite : m_map_sprite)
+        {
+            copy = (*sprite);
+            m_map_sprite_copy.push_back(copy);
+        }
     }
     MapBackground::~MapBackground()
     {
@@ -50,9 +57,30 @@ namespace Map
     }
     void MapBackground::DrawMap(sf::RenderWindow *window)
     {
-        for (int i = m_map_sprite.size() - 1; i >= 0; i--)
+        // Draw the original sprites
+        for (auto it = m_map_sprite.rbegin(); it != m_map_sprite.rend(); ++it)
         {
-            window->draw(*m_map_sprite[i]);
+            window->draw(**it);
+        }
+
+        // Calculate the rightmost position of the last sprite
+        float rightmostPosition = m_map_sprite.back()->getGlobalBounds().width;
+
+        // Create copies of the sprites
+        std::vector<sf::Sprite> m_map_sprite_copy;
+        sf::Sprite copy;
+        for (const auto &sprite : m_map_sprite)
+        {
+            copy = (*sprite);
+            m_map_sprite_copy.push_back(copy);
+        }
+
+        // Position and draw the copied sprites
+        for (auto it = m_map_sprite_copy.rbegin(); it != m_map_sprite_copy.rend(); ++it)
+        {
+            it->setPosition(rightmostPosition, 0.0f);
+            rightmostPosition += it->getGlobalBounds().width;
+            window->draw(*it);
         }
     }
     Floor::Floor(std::map<FloorType, const std::string> &floor_textures, float sprite_dim_x, float sprite_dim_y) : m_sprite_dim_x{sprite_dim_x}, m_sprite_dim_y{sprite_dim_y}
@@ -91,7 +119,6 @@ namespace Map
         for (const auto &i : m_tiles)
         {
             window->draw(i);
-
         }
     }
 
@@ -121,14 +148,14 @@ namespace Map
 
         case FloorType::GRASSDIRT:
             // Calculate the range of tiles within the visible area
-            tile_range_start =sf::Vector2i(static_cast<int>(0), static_cast<int>(0/ m_sprite_dim_y));
-            tile_range_end = sf::Vector2i(static_cast<int>((NUMBEROFTILESFLOOR*MAINWINDOWWIDHT) / m_sprite_dim_x), 1);        
+            tile_range_start = sf::Vector2i(static_cast<int>(0), static_cast<int>(0 / m_sprite_dim_y));
+            tile_range_end = sf::Vector2i(static_cast<int>((NUMBEROFTILESFLOOR * MAINWINDOWWIDHT) / m_sprite_dim_x), 1);
             for (int j = tile_range_start.y; j < tile_range_end.y; j++)
             {
                 for (int k = tile_range_start.x; k < tile_range_end.x; k++)
                 {
                     sf::Sprite tile(*m_floor_sprite.at(FloorType::GRASSDIRT));
-                    tile.setPosition(k * m_sprite_dim_x, MAINWINDOWHEIGHT - m_sprite_dim_y  - j * m_sprite_dim_y);
+                    tile.setPosition(k * m_sprite_dim_x, MAINWINDOWHEIGHT - m_sprite_dim_y - j * m_sprite_dim_y);
                     m_tiles.push_back(tile);
                 }
             }

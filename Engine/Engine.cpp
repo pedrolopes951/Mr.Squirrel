@@ -36,6 +36,7 @@ void Engine::InitWindow()
 void Engine::run()
 {
     sf::Clock clock;
+    m_window->setVerticalSyncEnabled(true);
     while (m_window->isOpen())
     {
         sf::Time elapsed = clock.restart();
@@ -81,6 +82,21 @@ void Engine::updateScrolling()
     m_view = m_window->getView();
     m_view.setCenter(m_main_player->GetPosition().x,m_view.getCenter().y);
     m_window->setView(m_view);
+
+    // // Make Backgound continues scrolling 
+    // for (auto &i : m_map_game->m_map_sprite)
+    // {
+    //     if(m_main_player->GetPosition().x >= (i->getGlobalBounds().left+i->getGlobalBounds().width))
+    //     {
+    //         m_main_player->SetPosition(sf::Vector2f(0.0f, m_main_player->GetPosition().y));
+    //         i->setPosition(0.0f, i->getPosition().y);
+
+    //     }
+    //     // Update the background position based on the player's movement
+    //     i->setPosition(i->getPosition().x - m_main_player->GetPosition().x, i->getPosition().y);
+    
+    // }
+    
         
 }
 

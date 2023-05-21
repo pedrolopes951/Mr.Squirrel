@@ -32,6 +32,7 @@ public:
     // Getter
     const sf::FloatRect GetGlobalBounds() const;  
     const sf::Vector2f GetPosition() const;
+    const float GetHorizontalVelocity() const;
     // Setter
     void SetPosition(sf::Vector2f position);
     void ResetVelocityVertical();
