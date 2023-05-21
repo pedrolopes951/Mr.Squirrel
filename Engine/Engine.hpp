@@ -20,13 +20,15 @@ private:
     std::string m_name_window;
     void InitWindow();
 
+    // View for side Scrolling
+    sf::View m_view;
+
     //Map  
     Map::MapBackground *m_map_game;
     void InitMap();   
 
     //Floor
     Map::Floor *m_floor_game;
-    std::vector<sf::Sprite> m_floor_tiles;
     void InitFloor();
 
     // Player
@@ -41,5 +43,6 @@ private:
 
     // Update Function
     void update(sf::Time& elapsed_time);
+    void updateScrolling();
     void updateColision();
 };

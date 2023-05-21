@@ -1,6 +1,7 @@
 #include "Enteties.hpp"
 
 constexpr float MAINWINDOWWIDHT = 800.f;
+constexpr int NUMBEROFTILESFLOOR = 100;
 constexpr float MAINWINDOWHEIGHT = 600.f;
 constexpr float FLOORWIDHT = 800.f;
 constexpr float FLOORHEIGHT = 50.f;
@@ -85,50 +86,57 @@ namespace Map
         }
     }
 
-    void Floor::DrawFloor(FloorType floor, sf::RenderWindow *window)
+    void Floor::DrawFloor(sf::RenderWindow *window)
     {
+        for (const auto &i : m_tiles)
+        {
+            window->draw(i);
 
-        window->draw(*m_floor_sprite.at(floor));
+        }
     }
 
-    std::vector<sf::Sprite> Floor::getGrid(Floor &floor_struct)
+    void Floor::getGrid(FloorType type)
     {
-        // Grid of sprites for the floor
-        const float l_title_width{floor_struct.m_sprite_dim_x};
-        const float l_title_height{floor_struct.m_sprite_dim_y};
-        int l_numTilesX{};
-        int l_numTilesY{};
-        std::vector<sf::Sprite> m_tiles{};
+        // // Grid of sprites for the floor
+        // const float l_title_width{m_sprite_dim_x};
+        // const float l_title_height{m_sprite_dim_y};
+        // int l_numTilesX{};
+        // int l_numTilesY{};
+        sf::Vector2i tile_range_start;
+        sf::Vector2i tile_range_end;
 
-        for (auto &i : floor_struct.m_floor_sprite)
+        // Look at type of floor
+        switch (type)
         {
-            // Look at type of floor
-            switch (i.first)
+        case FloorType::GRASS:
+            /*TODO*/
+            break;
+        case FloorType::LAVA:
+            /*TODO*/
+            break;
+
+        case FloorType::DIRT:
+            /*TODO*/
+            break;
+
+        case FloorType::GRASSDIRT:
+            // Calculate the range of tiles within the visible area
+            tile_range_start =sf::Vector2i(static_cast<int>(0), static_cast<int>(0/ m_sprite_dim_y));
+            tile_range_end = sf::Vector2i(static_cast<int>((NUMBEROFTILESFLOOR*MAINWINDOWWIDHT) / m_sprite_dim_x), 1);        
+            for (int j = tile_range_start.y; j < tile_range_end.y; j++)
             {
-            case FloorType::GRASS:
-                /*TODO*/
-                break;
-            case FloorType::LAVA:
-                /*TODO*/
-            case FloorType::DIRT:
-                /*TODO*/
-            case FloorType::GRASSDIRT:
-                l_numTilesX = std::ceil(static_cast<int>(FLOORWIDHT / l_title_width));
-                l_numTilesY = std::ceil(static_cast<int>(FLOORHEIGHT / l_title_height));
-                for (int j = 0; j < l_numTilesY; j++)
+                for (int k = tile_range_start.x; k < tile_range_end.x; k++)
                 {
-                    for (int k = 0; k < l_numTilesX; k++)
-                    {
-                        sf::Sprite tile(*i.second);
-                        tile.setPosition(k * l_title_width, (MAINWINDOWHEIGHT) - l_title_height - j * l_title_height);
-                        m_tiles.push_back(tile);
-                    }
+                    sf::Sprite tile(*m_floor_sprite.at(FloorType::GRASSDIRT));
+                    tile.setPosition(k * m_sprite_dim_x, MAINWINDOWHEIGHT - m_sprite_dim_y  - j * m_sprite_dim_y);
+                    m_tiles.push_back(tile);
                 }
-            default:
-                break;
             }
+            break;
+        default:
+            std::cerr << "Error, not valid Grid";
+            break;
         }
-        return m_tiles;
     }
 
     Floor::~Floor()

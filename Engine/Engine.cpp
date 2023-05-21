@@ -19,7 +19,7 @@ void Engine::InitFloor()
     std::map<Map::FloorType,const std::string> floor_text;
     floor_text.insert(std::pair<Map::FloorType,std::string>(Map::FloorType::GRASSDIRT,std::string(TexturesPATH + std::string("grass-dirt.png"))));
     m_floor_game = new Map::Floor(floor_text,50.f,50.f);
-    m_floor_tiles = Map::Floor::getGrid(*m_floor_game);
+    m_floor_game->getGrid(Map::FloorType::GRASSDIRT);
 }
 
 void Engine::InitPlayer()
@@ -62,10 +62,7 @@ void Engine::render()
     m_window->clear(sf::Color::Cyan);
 
     m_map_game->DrawMap(m_window);
-    for(auto &tile : m_floor_tiles)
-    {
-        m_window->draw(tile);
-    }
+    m_floor_game->DrawFloor(m_window);
     m_main_player->render(m_window);
     m_window->display();
 }
@@ -73,10 +70,40 @@ void Engine::render()
 void Engine::update(sf::Time& elapsed_time)
 {
     m_main_player->update(elapsed_time);
+    updateScrolling();
+    updateColision();
 }
+
+void Engine::updateScrolling()
+{
+
+    // Update the views's center to follow the players position
+    m_view = m_window->getView();
+    m_view.setCenter(m_main_player->GetPosition().x,m_view.getCenter().y);
+    m_window->setView(m_view);
+        
+}
+
 
 void Engine::updateColision()
 {
+    // Check if Player bound are colidding with tile the tiles vector
+    for (const auto &i : m_floor_game->m_tiles)
+    {
+        if(m_main_player->GetGlobalBounds().top +m_main_player->GetGlobalBounds().height >= i.getGlobalBounds().top)
+        {
+            // Check for bottom of player in tile
+            m_main_player->ResetVelocityVertical();
+            m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left,i.getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
+        }
+        // Check if player is going behind the left size of the window size 
+        if(m_main_player->GetGlobalBounds().left <= 0)
+        {
+            m_main_player->SetPosition(sf::Vector2f(0,m_main_player->GetPosition().y));
+        }
+    }
+
+
 }
 
 Engine::~Engine()

@@ -31,8 +31,10 @@ public:
 
     // Getter
     const sf::FloatRect GetGlobalBounds() const;  
+    const sf::Vector2f GetPosition() const;
     // Setter
     void SetPosition(sf::Vector2f position);
+    void ResetVelocityVertical();
 
 private:
 
@@ -45,7 +47,7 @@ private:
     int m_health_max;
     float m_verticalVelocity;
     float m_speed;
-    float m_distance; // Distance by player
+    float m_horizontalVelocity; // Distance by player
     float m_gravity;
     float m_maxfallspeed;
   

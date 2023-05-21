@@ -31,15 +31,17 @@ namespace Map
         // @param map of std::vector of string to hold which type of floor to load on the map
         Floor(std::map<FloorType, const std::string> &floor_textures, float sprite_dim_x, float sprite_dim_y);
         ~Floor();
-        void DrawFloor(FloorType floor, sf::RenderWindow *window);
-        static std::vector<sf::Sprite> getGrid(Floor& floor_struct);
+        void DrawFloor(sf::RenderWindow *window);        
+        void getGrid(FloorType type);
         float m_sprite_dim_x{};
         float m_sprite_dim_y{};
-        
+
         // Texture and Sprite
         std::map<FloorType, sf::Texture *> m_floor_texture;
         std::map<FloorType, sf::Sprite *> m_floor_sprite;
         void createSprite();
+        std::vector<sf::Sprite> m_tiles{};
+    
     };
 
 }

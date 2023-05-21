@@ -11,17 +11,17 @@ void Player::InitVariables()
     // TODO
     m_health_max = 10;
     m_health = m_health_max;
-    m_speed = 100.0f;
+    m_speed = 200.0f;
     m_verticalVelocity = 0.f;
     m_move_left_stepr = false;
     m_move_right_stepr = false;
     m_look_left = false;
-    m_gravity = 4.0f;
+    m_gravity = 400.0f;
     m_maxfallspeed = 20.f;
 }
 
 void Player::InitTextureSprite(const std::string &textures_path)
-{
+ {
     if (m_texture.loadFromFile(textures_path))
     {
         ParsePlayerSprite(0, 0, PlayerDir::STILLLEFT);
@@ -43,7 +43,7 @@ void Player::UpdatePhysics(sf::Time &elapsed_time)
     m_verticalVelocity = m_gravity * elapsed_time.asSeconds();
     if(m_verticalVelocity > m_maxfallspeed)
         m_verticalVelocity = m_maxfallspeed;
-    m_position.y += m_distance;
+    m_position.y += m_verticalVelocity;
 
 }
 
@@ -65,19 +65,19 @@ void Player::render(sf::RenderWindow *window)
 void Player::update(sf::Time &elapsed_time)
 {
     UpdatePhysics(elapsed_time);
-    m_distance = m_speed * elapsed_time.asSeconds(); // Dsitance based on the elapsed time of each frame
+    m_horizontalVelocity = m_speed * elapsed_time.asSeconds(); // Dsitance based on the elapsed time of each frame
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
         if (m_move_right_stepr)
         {
-            m_position.x += m_distance;
+            m_position.x += m_horizontalVelocity;
             m_sprites.at(PlayerDir::WALKRIGHTLEFT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::WALKRIGHTLEFT);
             m_move_right_stepr = false;
         }
         else
         {
-            m_position.x += m_distance;
+            m_position.x += m_horizontalVelocity;
             m_sprites.at(PlayerDir::WALKRIGHTLEFT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::WALKRIGHTRIGHT);
             m_move_right_stepr = true;
@@ -88,14 +88,14 @@ void Player::update(sf::Time &elapsed_time)
     {
         if (m_move_left_stepr)
         {
-            m_position.x -= m_distance;
+            m_position.x -= m_horizontalVelocity;
             m_sprites.at(PlayerDir::WALKLEFTLEFT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::WALKLEFTLEFT);
             m_move_left_stepr = false;
         }
         else
         {
-            m_position.x -= m_distance;
+            m_position.x -= m_horizontalVelocity;
             m_sprites.at(PlayerDir::WALKLEFTRIGHT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::WALKLEFTRIGHT);
             m_move_left_stepr = true;
@@ -104,7 +104,7 @@ void Player::update(sf::Time &elapsed_time)
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        m_position.y -= m_distance;
+        m_position.y -= m_horizontalVelocity;
         m_sprites.at(PlayerDir::JUMPRIGHT).setPosition(m_position);
         m_drawn_sprite = m_sprites.at(PlayerDir::JUMPRIGHT);
     }
@@ -134,9 +134,19 @@ const sf::FloatRect Player::GetGlobalBounds() const
     return m_drawn_sprite.getGlobalBounds();
 }
 
+const sf::Vector2f Player::GetPosition() const
+{
+    return m_position;
+}
+
 void Player::SetPosition(sf::Vector2f position)
 {
     m_position = position;
+}
+
+void Player::ResetVelocityVertical()
+{
+    m_verticalVelocity = 0.f;
 }
 
 Player::~Player()
