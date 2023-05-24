@@ -37,11 +37,12 @@ namespace Map
         }
         // Create copies of the sprites
         sf::Sprite copy;
-        for (const auto &sprite : m_map_sprite)
+        for (auto sprite : m_map_sprite)
         {
             copy = (*sprite);
             m_map_sprite_copy.push_back(copy);
         }
+        m_rightmostPosition = m_map_sprite.back()->getGlobalBounds().width;
     }
     MapBackground::~MapBackground()
     {
@@ -63,25 +64,15 @@ namespace Map
             window->draw(**it);
         }
 
-        // Calculate the rightmost position of the last sprite
-        float rightmostPosition = m_map_sprite.back()->getGlobalBounds().width;
-
-        // Create copies of the sprites
-        std::vector<sf::Sprite> m_map_sprite_copy;
-        sf::Sprite copy;
-        for (const auto &sprite : m_map_sprite)
-        {
-            copy = (*sprite);
-            m_map_sprite_copy.push_back(copy);
-        }
 
         // Position and draw the copied sprites
         for (auto it = m_map_sprite_copy.rbegin(); it != m_map_sprite_copy.rend(); ++it)
         {
-            it->setPosition(rightmostPosition, 0.0f);
-            rightmostPosition += it->getGlobalBounds().width;
+            it->setPosition(m_rightmostPosition, 0.0f);
             window->draw(*it);
         }
+
+        
     }
     Floor::Floor(std::map<FloorType, const std::string> &floor_textures, float sprite_dim_x, float sprite_dim_y) : m_sprite_dim_x{sprite_dim_x}, m_sprite_dim_y{sprite_dim_y}
     {

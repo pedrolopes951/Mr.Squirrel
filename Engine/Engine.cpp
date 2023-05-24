@@ -10,26 +10,27 @@ Engine::Engine(int size_x, int size_y, std::string name_window) : m_size_window_
 
 void Engine::InitMap()
 {
-    std::vector<std::string> path_text{TexturesPATH + std::string("building no. 1.png"),TexturesPATH + std::string("building no. 2.png"),TexturesPATH + std::string("building 3.png")};
+    std::vector<std::string> path_text{TexturesPATH + std::string("building no. 1.png"), TexturesPATH + std::string("building no. 2.png"), TexturesPATH + std::string("building 3.png")};
     m_map_game = new Map::MapBackground(path_text);
 }
 
 void Engine::InitFloor()
 {
-    std::map<Map::FloorType,const std::string> floor_text;
-    floor_text.insert(std::pair<Map::FloorType,std::string>(Map::FloorType::GRASSDIRT,std::string(TexturesPATH + std::string("grass-dirt.png"))));
-    m_floor_game = new Map::Floor(floor_text,50.f,50.f);
+    std::map<Map::FloorType, const std::string> floor_text;
+    floor_text.insert(std::pair<Map::FloorType, std::string>(Map::FloorType::GRASSDIRT, std::string(TexturesPATH + std::string("grass-dirt.png"))));
+    m_floor_game = new Map::Floor(floor_text, 50.f, 50.f);
     m_floor_game->getGrid(Map::FloorType::GRASSDIRT);
 }
 
 void Engine::InitPlayer()
 {
-    m_main_player = new Player(std::string(TexturesPATH + std::string("Main_Player.png")),sf::Vector2f(m_window->getSize().x/2,m_window->getSize().x/2));
+    m_main_player = new Player(std::string(TexturesPATH + std::string("Main_Player.png")), sf::Vector2f(m_window->getSize().x / 2, m_window->getSize().x / 2));
+    m_pos_player_update = m_main_player->GetPosition().x;
 }
 
 void Engine::InitWindow()
 {
-    m_window = new sf::RenderWindow(sf::VideoMode(m_size_window_x,m_size_window_y),m_name_window, sf::Style::Close);
+    m_window = new sf::RenderWindow(sf::VideoMode(m_size_window_x, m_size_window_y), m_name_window, sf::Style::Close);
     m_window->setFramerateLimit(60);
 }
 
@@ -42,20 +43,17 @@ void Engine::run()
         sf::Time elapsed = clock.restart();
         this->updatePollEvents();
         this->update(elapsed);
-        this->render();    
+        this->render();
     }
-    
 }
 void Engine::updatePollEvents()
 {
     while (m_window->pollEvent(m_events))
     {
         //  "Close" Button of the window
-        if(m_events.type == sf::Event::Closed)
+        if (m_events.type == sf::Event::Closed)
             m_window->close();
     }
-
-    
 }
 
 void Engine::render()
@@ -68,58 +66,62 @@ void Engine::render()
     m_window->display();
 }
 
-void Engine::update(sf::Time& elapsed_time)
+void Engine::update(sf::Time &elapsed_time)
 {
     m_main_player->update(elapsed_time);
-    updateScrolling();
+    float curr_pos_player = m_main_player->GetPosition().x;
+    updateScrolling(curr_pos_player);
     updateColision();
 }
 
-void Engine::updateScrolling()
+void Engine::updateScrolling(float curr_pos_player)
 {
-
-    // Update the views's center to follow the players position
     m_view = m_window->getView();
-    m_view.setCenter(m_main_player->GetPosition().x,m_view.getCenter().y);
-    m_window->setView(m_view);
 
-    // // Make Backgound continues scrolling 
-    // for (auto &i : m_map_game->m_map_sprite)
-    // {
-    //     if(m_main_player->GetPosition().x >= (i->getGlobalBounds().left+i->getGlobalBounds().width))
-    //     {
-    //         m_main_player->SetPosition(sf::Vector2f(0.0f, m_main_player->GetPosition().y));
-    //         i->setPosition(0.0f, i->getPosition().y);
+    // sf::Vector2f playePosition = m_main_player->GetPosition();
+    sf::Vector2f viewCenter = m_view.getCenter();
 
-    //     }
-    //     // Update the background position based on the player's movement
-    //     i->setPosition(i->getPosition().x - m_main_player->GetPosition().x, i->getPosition().y);
-    
-    // }
-    
-        
+    std::cout <<"View Center" <<"x :" << viewCenter.x << " y:" << viewCenter.y << std::endl;
+
+    std::cout <<"Player Position " <<"x :" << m_main_player->GetPosition().x << " y:" << m_main_player->GetPosition().y << std::endl;
+
+    std::cout <<"Previous Player Position " <<"x :" << m_pos_player_update << std::endl;
+
+    if (m_pos_player_update == m_main_player->GetPosition().x)
+    {
+        // Update the views's center to follow the players position
+        std::cout << " Entered Loop " << std::endl;
+        m_view.setCenter(viewCenter);
+        m_window->setView(m_view);
+
+    }
+    if (viewCenter.x < m_main_player->GetPosition().x)
+    {
+        // Follow the view right
+        m_view.setCenter(m_main_player->GetPosition().x,viewCenter.y);
+        m_window->setView(m_view);
+        m_pos_player_update = m_main_player->GetPosition().x;
+    }
+
 }
-
 
 void Engine::updateColision()
 {
     // Check if Player bound are colidding with tile the tiles vector
     for (const auto &i : m_floor_game->m_tiles)
     {
-        if(m_main_player->GetGlobalBounds().top +m_main_player->GetGlobalBounds().height >= i.getGlobalBounds().top)
+        if (m_main_player->GetGlobalBounds().top + m_main_player->GetGlobalBounds().height >= i.getGlobalBounds().top)
         {
             // Check for bottom of player in tile
             m_main_player->ResetVelocityVertical();
-            m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left,i.getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
+            m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left, i.getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
         }
-        // Check if player is going behind the left size of the window size 
-        if(m_main_player->GetGlobalBounds().left <= 0)
+        // Check if player is going behind the left size of the window size
+        if (m_main_player->GetGlobalBounds().left <= 0)
         {
-            m_main_player->SetPosition(sf::Vector2f(0,m_main_player->GetPosition().y));
+            m_main_player->SetPosition(sf::Vector2f(0, m_main_player->GetPosition().y));
         }
     }
-
-
 }
 
 Engine::~Engine()

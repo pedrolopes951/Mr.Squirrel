@@ -33,6 +33,7 @@ private:
 
     // Player
     Player* m_main_player;
+    float m_pos_player_update; 
     void InitPlayer();
         
     // Main Events of the game
@@ -43,6 +44,8 @@ private:
 
     // Update Function
     void update(sf::Time& elapsed_time);
-    void updateScrolling();
+    void updateScrolling(float curr_position);
     void updateColision();
 };
+
+ 

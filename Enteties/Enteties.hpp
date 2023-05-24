@@ -25,6 +25,8 @@ namespace Map
         std::vector<sf::Sprite> m_map_sprite_copy;
         std::vector<sf::Texture *> m_map_texture;
         void createSprite();
+    // Save righ most position
+    float m_rightmostPosition;
     };
 
     struct Floor
