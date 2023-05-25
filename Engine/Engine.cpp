@@ -81,16 +81,9 @@ void Engine::updateScrolling(float curr_pos_player)
     // sf::Vector2f playePosition = m_main_player->GetPosition();
     sf::Vector2f viewCenter = m_view.getCenter();
 
-    std::cout <<"View Center" <<"x :" << viewCenter.x << " y:" << viewCenter.y << std::endl;
-
-    std::cout <<"Player Position " <<"x :" << m_main_player->GetPosition().x << " y:" << m_main_player->GetPosition().y << std::endl;
-
-    std::cout <<"Previous Player Position " <<"x :" << m_pos_player_update << std::endl;
-
     if (m_pos_player_update == m_main_player->GetPosition().x)
     {
         // Update the views's center to follow the players position
-        std::cout << " Entered Loop " << std::endl;
         m_view.setCenter(viewCenter);
         m_window->setView(m_view);
 
@@ -116,11 +109,13 @@ void Engine::updateColision()
             m_main_player->ResetVelocityVertical();
             m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left, i.getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
         }
-        // Check if player is going behind the left size of the window size
-        if (m_main_player->GetGlobalBounds().left <= 0)
-        {
-            m_main_player->SetPosition(sf::Vector2f(0, m_main_player->GetPosition().y));
-        }
+    
+    }
+
+    // Make Player Colide with the left wall everytime it moves 
+    if(m_main_player->GetGlobalBounds().left <= m_view.getCenter().x - m_view.getSize().x/2 )
+    {
+        m_main_player->SetPosition(sf::Vector2f(m_view.getCenter().x - m_view.getSize().x/2, m_main_player->GetPosition().y));
     }
 }
 
