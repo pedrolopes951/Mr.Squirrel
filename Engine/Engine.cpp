@@ -26,6 +26,7 @@ void Engine::InitPlayer()
 {
     m_main_player = new Player(std::string(TexturesPATH + std::string("Main_Player.png")), sf::Vector2f(m_window->getSize().x / 2, m_window->getSize().x / 2));
     m_pos_player_update = m_main_player->GetPosition().x;
+    m_main_player->SetGroundLevel(sf::Vector2f(0,m_floor_game->m_tiles.begin()->getGlobalBounds().top));
 }
 
 void Engine::InitWindow()
@@ -53,6 +54,7 @@ void Engine::updatePollEvents()
         //  "Close" Button of the window
         if (m_events.type == sf::Event::Closed)
             m_window->close();
+        
     }
 }
 
@@ -68,7 +70,7 @@ void Engine::render()
 
 void Engine::update(sf::Time &elapsed_time)
 {
-    m_main_player->update(elapsed_time);
+    m_main_player->update(elapsed_time, m_events);
     float curr_pos_player = m_main_player->GetPosition().x;
     updateScrolling(curr_pos_player);
     updateColision();
@@ -103,11 +105,13 @@ void Engine::updateColision()
     // Check if Player bound are colidding with tile the tiles vector
     for (const auto &i : m_floor_game->m_tiles)
     {
+
         if (m_main_player->GetGlobalBounds().top + m_main_player->GetGlobalBounds().height >= i.getGlobalBounds().top)
         {
             // Check for bottom of player in tile
-            m_main_player->ResetVelocityVertical();
+            m_main_player->ResetVelocityVertical();            
             m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left, i.getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
+            m_main_player->SetGroundLevel(sf::Vector2f(0, i.getGlobalBounds().top));
         }
     
     }

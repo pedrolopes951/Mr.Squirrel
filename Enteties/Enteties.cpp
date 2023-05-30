@@ -1,10 +1,5 @@
 #include "Enteties.hpp"
 
-constexpr float MAINWINDOWWIDHT = 800.f;
-constexpr int NUMBEROFTILESFLOOR = 100;
-constexpr float MAINWINDOWHEIGHT = 600.f;
-constexpr float FLOORWIDHT = 800.f;
-constexpr float FLOORHEIGHT = 50.f;
 
 namespace Map
 {
