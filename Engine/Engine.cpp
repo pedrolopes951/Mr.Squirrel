@@ -63,7 +63,7 @@ void Engine::render()
     m_window->clear(sf::Color::Cyan);
 
     m_map_game->DrawMap(m_window);
-    m_floor_game->DrawFloor(m_window);
+    m_floor_game->draw(m_window);
     m_main_player->render(m_window);
     m_window->display();
 }

@@ -100,7 +100,7 @@ namespace Map
         }
     }
 
-    void Floor::DrawFloor(sf::RenderWindow *window)
+    void Floor::draw(sf::RenderWindow *window)
     {
         for (const auto &i : m_tiles)
         {
