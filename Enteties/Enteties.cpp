@@ -1,6 +1,5 @@
 #include "Enteties.hpp"
 
-
 namespace Map
 {
     MapBackground::MapBackground(std::vector<std::string> &maps_text_paths)
@@ -10,159 +9,144 @@ namespace Map
             std::cerr << "Error Not Enough Textures paths for the background"
                       << "\n";
         }
-        for (auto i : maps_text_paths)
+        this->loadTextures(maps_text_paths);
+        this->createSprite();
+    }
+    void MapBackground::loadTextures(const std::vector<std::string> &maps_text_paths)
+    {
+        for (const auto &path : maps_text_paths)
         {
-            sf::Texture *texture = new sf::Texture();
-            if (!texture->loadFromFile(i))
+            sf::Texture texture;
+
+            if (!texture.loadFromFile(path))
             {
                 std::cerr << "Error Loading the texture"
                           << "\n";
             }
             m_map_texture.push_back(texture);
+            ;
         }
 
-        this->createSprite();
+        m_rightmostPosition = m_map_texture.back().getSize().x;
     }
     void MapBackground::createSprite()
     {
-        for (auto i : m_map_texture)
+        m_map_sprite.reserve(m_map_texture.size() * NUMBERMAPS);
+
+        for (auto &texture : m_map_texture)
         {
-            sf::Sprite *sprite = new sf::Sprite(*i);
+            sf::Sprite sprite;
+            sprite.setTexture(texture);
             m_map_sprite.push_back(sprite);
         }
-        // Create copies of the sprites
-        sf::Sprite copy;
-        for (auto sprite : m_map_sprite)
+        std::cout << typeid(m_map_sprite[1]).name() << std::endl;
+
+        m_total_map_size.x = m_map_sprite.back().getPosition().x;
+        for (size_t i = 0; i < NUMBERMAPS; i++)
         {
-            copy = (*sprite);
-            m_map_sprite_copy.push_back(copy);
+            sf::Sprite copy;
+            auto it_end = m_map_sprite.end();
+            for (auto it = m_map_sprite.begin() + i * m_map_texture.size(); it != it_end; ++it)
+            {
+                copy = (*it);
+                copy.setPosition(m_rightmostPosition, 0.0f);
+                m_map_sprite.push_back(copy);
+            }
+            m_rightmostPosition = m_map_sprite.back().getPosition().x + m_map_sprite.back().getGlobalBounds().width;
         }
-        m_rightmostPosition = m_map_sprite.back()->getGlobalBounds().width;
+        m_total_map_size.x = m_map_sprite.back().getPosition().x;
     }
     MapBackground::~MapBackground()
     {
-        for (auto i : m_map_sprite)
-        {
-            delete i;
-        }
-
-        for (auto i : m_map_texture)
-        {
-            delete i;
-        }
     }
     void MapBackground::DrawMap(sf::RenderWindow *window)
     {
         // Draw the original sprites
-        for (auto it = m_map_sprite.rbegin(); it != m_map_sprite.rend(); ++it)
+        for (auto it = m_map_sprite.begin(); it != m_map_sprite.end(); ++it)
         {
-            window->draw(**it);
-        }
-
-
-        // Position and draw the copied sprites
-        for (auto it = m_map_sprite_copy.rbegin(); it != m_map_sprite_copy.rend(); ++it)
-        {
-            it->setPosition(m_rightmostPosition, 0.0f);
             window->draw(*it);
         }
-
-        
     }
-    Floor::Floor(std::map<FloorType, const std::string> &floor_textures, float sprite_dim_x, float sprite_dim_y) : m_sprite_dim_x{sprite_dim_x}, m_sprite_dim_y{sprite_dim_y}
+    Floor::Floor(const cv::Mat &tile)
     {
-        for (auto i : floor_textures)
-        {
+        sf::Image sfml_image; // Create a sfml image with the dimention of the pixels matrix of the cv object
+        sfml_image.create(tile.cols, tile.rows);
 
-            sf::Texture *texture = new sf::Texture();
-            if (!texture->loadFromFile(i.second))
+        // Iterate over each pixel in the tile matrix
+        for (int y = 0; y < tile.rows; y++)
+        {
+            for (int x = 0; x < tile.cols; x++)
             {
-                std::cerr << "Error Loading the texture"
-                          << "\n";
+                // Retrieve the color value of the current pixel
+                cv::Vec3b color = tile.at<cv::Vec3b>(y, x);
+
+                // Create an SFML color using the RGB values from the OpenCV color channels
+                sf::Color sfml_color(color[2], color[1], color[0]);
+
+                // Set the pixel at (x, y) in the SFML image with the corresponding SFML color
+                sfml_image.setPixel(x, y, sfml_color);
             }
-            m_floor_texture.insert(std::pair<FloorType, sf::Texture *>(i.first, texture));
         }
 
-        this->createSprite();
-    }
-    void Floor::createSprite()
-    {
-        for (auto &i : m_floor_texture)
-        {
+        m_texture.loadFromImage(sfml_image);
+        m_sprite.setTexture(m_texture);
 
-            sf::Sprite *sprite = new sf::Sprite();
-
-            sprite->setTexture(*i.second);
-
-            // Set Sprite with already current rectangle dimentions
-            sprite->setScale(sf::Vector2f(m_sprite_dim_x / sprite->getTextureRect().width, m_sprite_dim_y / sprite->getTextureRect().height));
-            m_floor_sprite.insert(std::pair<FloorType, sf::Sprite *>(i.first, sprite));
-        }
+        m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
+        m_sprite.setPosition(sf::Vector2f(0, WINDOWY - m_sprite.getGlobalBounds().height));
     }
 
     void Floor::draw(sf::RenderWindow *window)
     {
-        for (const auto &i : m_tiles)
-        {
-            window->draw(i);
-        }
+
+        window->draw(m_sprite);
     }
 
-    void Floor::getGrid(FloorType type)
+    const sf::Sprite &Floor::getSprite() const
     {
-        // // Grid of sprites for the floor
-        // const float l_title_width{m_sprite_dim_x};
-        // const float l_title_height{m_sprite_dim_y};
-        // int l_numTilesX{};
-        // int l_numTilesY{};
-        sf::Vector2i tile_range_start;
-        sf::Vector2i tile_range_end;
-
-        // Look at type of floor
-        switch (type)
-        {
-        case FloorType::GRASS:
-            /*TODO*/
-            break;
-        case FloorType::LAVA:
-            /*TODO*/
-            break;
-
-        case FloorType::DIRT:
-            /*TODO*/
-            break;
-
-        case FloorType::GRASSDIRT:
-            // Calculate the range of tiles within the visible area
-            tile_range_start = sf::Vector2i(static_cast<int>(0), static_cast<int>(0 / m_sprite_dim_y));
-            tile_range_end = sf::Vector2i(static_cast<int>((NUMBEROFTILESFLOOR * MAINWINDOWWIDHT) / m_sprite_dim_x), 1);
-            for (int j = tile_range_start.y; j < tile_range_end.y; j++)
-            {
-                for (int k = tile_range_start.x; k < tile_range_end.x; k++)
-                {
-                    sf::Sprite tile(*m_floor_sprite.at(FloorType::GRASSDIRT));
-                    tile.setPosition(k * m_sprite_dim_x, MAINWINDOWHEIGHT - m_sprite_dim_y - j * m_sprite_dim_y);
-                    m_tiles.push_back(tile);
-                }
-            }
-            break;
-        default:
-            std::cerr << "Error, not valid Grid";
-            break;
-        }
+        return m_sprite;
     }
 
     Floor::~Floor()
     {
-        for (auto i : m_floor_texture)
-        {
-            delete i.second;
-        }
-
-        for (auto i : m_floor_sprite)
-        {
-
-            delete i.second;
-        }
     }
+
+    Platform::Platform(const cv::Mat &tile)
+    {
+        sf::Image sfml_imag;
+        sfml_imag.create(tile.cols, tile.rows, tile.ptr());
+
+        m_texture.loadFromImage(sfml_imag);
+        m_sprite.setTexture(m_texture);
+        // m_sprite.setTextureRect(sf::IntRect(tileData.posX, tileData.posY, tileData.sizeX, tileData.sizeY)); // set the global bounds of the sprite
+        // TODO: resize the texture to the 50,50
+    };
+    void Platform::draw(sf::RenderWindow *window)
+    {
+        window->draw(m_sprite);
+    }
+    const sf::Sprite &Platform::getSprite() const
+    {
+        return m_sprite;
+    }
+
+    Wall::Wall(const cv::Mat &tile)
+    {
+        sf::Image sfml_imag;
+        sfml_imag.create(tile.cols, tile.rows, tile.ptr());
+
+        m_texture.loadFromImage(sfml_imag);
+        m_sprite.setTexture(m_texture);
+        // m_sprite.setTextureRect(sf::IntRect(tileData.posX, tileData.posY, tileData.sizeX, tileData.sizeY)); // set the global bounds of the sprite
+        //  TODO: resize the texture to the 50,50
+    }
+
+    void Wall::draw(sf::RenderWindow *window)
+    {
+        window->draw(m_sprite);
+    }
+    const sf::Sprite &Wall::getSprite() const
+    {
+        return m_sprite;
+    }
+
 }

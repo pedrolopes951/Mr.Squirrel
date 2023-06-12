@@ -3,6 +3,8 @@
 #include "Player.hpp"
 #include "SFML/Graphics.hpp" 
 #include "SFML/Window.hpp"
+#include <opencv4/opencv2/opencv.hpp>
+
 
 class Engine
 {
@@ -27,9 +29,10 @@ private:
     Map::MapBackground *m_map_game;
     void InitMap();   
 
-    //Floor
-    Map::Floor *m_floor_game;
-    void InitFloor();
+    //TIles
+    Map::TileFactory m_tilefactory;
+    std::map<Map::FloorType, Map::ITiles*> m_tiles;
+    void InitTiles(); 
 
     // Player
     Player* m_main_player;

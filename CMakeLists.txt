@@ -13,6 +13,10 @@ find_package(SFML 2.5 REQUIRED system window graphics network audio)
 set(SFML_LIBS sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 
 
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+message(STATUS "OpenCV include directories: ${OpenCV_INCLUDE_DIRS}")
+
 add_definitions(-DTexturesPATH="${CMAKE_BINARY_DIR}/Textures/")
 add_definitions(-DFONTPATH="${CMAKE_BINARY_DIR}/Fonts/")
 
@@ -21,7 +25,7 @@ add_subdirectory(Enteties)
 add_subdirectory(Executable)
 add_subdirectory(Player)
 
-
+ 
 
 # Create the Fonts directory in the binary directory
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Fonts)   

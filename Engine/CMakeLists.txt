@@ -17,4 +17,4 @@ add_library(Engine ${SOURCES})
 
 
 # Link SFML libraries
-target_link_libraries(Engine PUBLIC MyPCH ${SFML_LIBS})
+target_link_libraries(Engine PUBLIC MyPCH ${SFML_LIBS} ${OpenCV_LIBS})

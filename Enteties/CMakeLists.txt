@@ -10,4 +10,4 @@ add_library(Enteties ${SOURCES})
 
 
 # Link SFML libraries
-target_link_libraries(Enteties PUBLIC MyPCH ${SFML_LIBS})
+target_link_libraries(Enteties PUBLIC MyPCH ${SFML_LIBS} ${OpenCV_LIBS})

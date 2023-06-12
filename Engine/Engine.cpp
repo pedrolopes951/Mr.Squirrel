@@ -4,29 +4,36 @@ Engine::Engine(int size_x, int size_y, std::string name_window) : m_size_window_
 {
     this->InitWindow();
     this->InitMap();
-    this->InitFloor();
+    this->InitTiles();
     this->InitPlayer();
 }
 
 void Engine::InitMap()
 {
-    std::vector<std::string> path_text{TexturesPATH + std::string("building no. 1.png"), TexturesPATH + std::string("building no. 2.png"), TexturesPATH + std::string("building 3.png")};
+    std::vector<std::string> path_text{TexturesPATH + std::string("building3.png"), TexturesPATH + std::string("building1.png"), TexturesPATH + std::string("building2.png")};
     m_map_game = new Map::MapBackground(path_text);
 }
 
-void Engine::InitFloor()
+void Engine::InitTiles()
 {
-    std::map<Map::FloorType, const std::string> floor_text;
-    floor_text.insert(std::pair<Map::FloorType, std::string>(Map::FloorType::GRASSDIRT, std::string(TexturesPATH + std::string("grass-dirt.png"))));
-    m_floor_game = new Map::Floor(floor_text, 50.f, 50.f);
-    m_floor_game->getGrid(Map::FloorType::GRASSDIRT);
+    // Load the image using OpenCV
+    cv::Mat image_floor = cv::imread(TexturesPATH + std::string("Tiles/Grass/Grass_13-128x128.png"),cv::IMREAD_COLOR);
+
+    if (image_floor.empty())
+    {
+        std::cerr << "Failed to load the image." << std::endl;
+        throw(std::string("Failed to load the image."));
+    }
+
+    // Floor
+    m_tiles[Map::FloorType::FLOOR] = Map::TileFactory::createTile(image_floor, Map::FloorType::FLOOR);
 }
 
 void Engine::InitPlayer()
 {
     m_main_player = new Player(std::string(TexturesPATH + std::string("Main_Player.png")), sf::Vector2f(m_window->getSize().x / 2, m_window->getSize().x / 2));
     m_pos_player_update = m_main_player->GetPosition().x;
-    m_main_player->SetGroundLevel(sf::Vector2f(0,m_floor_game->m_tiles.begin()->getGlobalBounds().top));
+    m_main_player->SetGroundLevel(sf::Vector2f(0, m_tiles[Map::FloorType::FLOOR]->getSprite().getGlobalBounds().top));
 }
 
 void Engine::InitWindow()
@@ -44,6 +51,7 @@ void Engine::run()
         sf::Time elapsed = clock.restart();
         this->updatePollEvents();
         this->update(elapsed);
+        std::cout << m_main_player->GetPosition().x << std::endl;
         this->render();
     }
 }
@@ -54,7 +62,6 @@ void Engine::updatePollEvents()
         //  "Close" Button of the window
         if (m_events.type == sf::Event::Closed)
             m_window->close();
-        
     }
 }
 
@@ -63,7 +70,10 @@ void Engine::render()
     m_window->clear(sf::Color::Cyan);
 
     m_map_game->DrawMap(m_window);
-    m_floor_game->draw(m_window);
+    for (auto &i : m_tiles)
+    {
+        i.second->draw(m_window);
+    }
     m_main_player->render(m_window);
     m_window->display();
 }
@@ -88,44 +98,40 @@ void Engine::updateScrolling(float curr_pos_player)
         // Update the views's center to follow the players position
         m_view.setCenter(viewCenter);
         m_window->setView(m_view);
-
     }
     if (viewCenter.x < m_main_player->GetPosition().x)
     {
         // Follow the view right
-        m_view.setCenter(m_main_player->GetPosition().x,viewCenter.y);
+        m_view.setCenter(m_main_player->GetPosition().x, viewCenter.y);
         m_window->setView(m_view);
         m_pos_player_update = m_main_player->GetPosition().x;
     }
-
 }
 
 void Engine::updateColision()
 {
     // Check if Player bound are colidding with tile the tiles vector
-    for (const auto &i : m_floor_game->m_tiles)
+    for (const auto &i : m_tiles)
     {
 
-        if (m_main_player->GetGlobalBounds().top + m_main_player->GetGlobalBounds().height >= i.getGlobalBounds().top)
+        if (m_main_player->GetGlobalBounds().top + m_main_player->GetGlobalBounds().height >= i.second->getSprite().getGlobalBounds().top)
         {
             // Check for bottom of player in tile
-            m_main_player->ResetVelocityVertical();            
-            m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left, i.getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
-            m_main_player->SetGroundLevel(sf::Vector2f(0, i.getGlobalBounds().top));
+            m_main_player->ResetVelocityVertical();
+            m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left, i.second->getSprite().getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
+            m_main_player->SetGroundLevel(sf::Vector2f(0, i.second->getSprite().getGlobalBounds().top));
         }
-    
     }
 
-    // Make Player Colide with the left wall everytime it moves 
-    if(m_main_player->GetGlobalBounds().left <= m_view.getCenter().x - m_view.getSize().x/2 )
+    // Make Player Colide with the left wall everytime it moves
+    if (m_main_player->GetGlobalBounds().left <= m_view.getCenter().x - m_view.getSize().x / 2)
     {
-        m_main_player->SetPosition(sf::Vector2f(m_view.getCenter().x - m_view.getSize().x/2, m_main_player->GetPosition().y));
+        m_main_player->SetPosition(sf::Vector2f(m_view.getCenter().x - m_view.getSize().x / 2, m_main_player->GetPosition().y));
     }
 }
 
 Engine::~Engine()
 {
-    delete m_floor_game;
     delete m_map_game;
     delete m_main_player;
     delete m_window;
