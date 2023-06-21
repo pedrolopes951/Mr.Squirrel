@@ -36,6 +36,21 @@ void Player::InitTextureSprite(const std::string &textures_path)
         ParsePlayerSprite(2, 2, PlayerDir::JUMPRIGHT);
     }
     m_drawn_sprite = m_sprites.at(PlayerDir::STILLRIGHT);
+    updateCollitionBox();
+}
+
+void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
+{
+    sf::Sprite sprite;
+    sprite.setTexture(m_texture);
+    sprite.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
+    std::cout << " Width : " << sprite.getGlobalBounds().width << " Height : " << sprite.getGlobalBounds().height << std::endl;
+    sprite.setOrigin(sprite.getGlobalBounds().width / 2, sprite.getGlobalBounds().height / 2);
+    sprite.setScale(3.f, 3.f); // Scale the sprite to the desired size
+
+    sprite.setPosition(m_position);
+
+    m_sprites.insert(std::make_pair(dir, sprite));
 }
 
 void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
@@ -77,7 +92,7 @@ void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
         }
         m_look_left = true;
     }
-    else 
+    else
     {
 
         if (m_look_left)
@@ -100,9 +115,9 @@ void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
 
 void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)&& m_on_ground)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && m_on_ground)
     {
-        m_verticalaccelaration = -m_jump_height; 
+        m_verticalaccelaration = -m_jump_height;
         m_on_ground = false;
         m_is_jumping = true;
     }
@@ -114,22 +129,27 @@ void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
         {
             m_sprites.at(PlayerDir::JUMPLEFT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::JUMPLEFT);
-            std::cout << "Here Left" << std::endl;
         }
         else
         {
             m_sprites.at(PlayerDir::JUMPRIGHT).setPosition(m_position);
             m_drawn_sprite = m_sprites.at(PlayerDir::JUMPRIGHT);
-            std::cout << "Here Right" << std::endl;
         }
     }
     UpdatePhysics(elapsed_time);
     if (m_drawn_sprite.getGlobalBounds().top + m_drawn_sprite.getGlobalBounds().height >= m_ground_level.y)
     {
-        std::cout << "Reached Ground Level" << std::endl; 
         m_on_ground = true;
         m_is_jumping = false;
     }
+}
+
+void Player::updateCollitionBox()
+{
+    m_collition_box.left = m_drawn_sprite.getPosition().x; // OFFSET to collition;
+    m_collition_box.top = m_drawn_sprite.getPosition().y;  // OFFSET to collition;
+    m_collition_box.height = m_drawn_sprite.getGlobalBounds().height;
+    m_collition_box.width = m_drawn_sprite.getGlobalBounds().width - 32.f;
 }
 
 void Player::UpdatePhysics(sf::Time &elapsed_time)
@@ -140,24 +160,32 @@ void Player::UpdatePhysics(sf::Time &elapsed_time)
     m_position.y += m_verticalaccelaration * elapsed_time.asSeconds();
 }
 
-void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
-{
-    sf::Sprite sprite;
-    sprite.setTexture(m_texture);
-    sprite.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
-    sprite.scale(3, 3);
-    sprite.setPosition(m_position);
-    m_sprites.insert(std::make_pair(dir, sprite));
-}
-
 void Player::render(sf::RenderWindow *window)
 {
     window->draw(m_drawn_sprite);
+    
+    // Create a red circle shape with a center in sprite
+    sf::CircleShape center_sprite(5.f);
+    center_sprite.setFillColor(sf::Color::Red);
+
+    // Position the center_sprite at coordinates
+    center_sprite.setPosition(m_drawn_sprite.getPosition());
+
+    window->draw(center_sprite);
+    // // Create a blue circle shape with a center in collition box
+    // sf::CircleShape center_box(5.f);
+    // center_box.setFillColor(sf::Color::Cyan);
+
+    // // Position the center_box at coordinates
+    // center_box.setPosition(m_collition_box.left, m_collition_box.top);
+    // window->draw(center_box);
+
 }
 
 void Player::update(sf::Time &elapsed_time, sf::Event &events)
 {
     UpdateForwardMovement(elapsed_time, events);
+    updateCollitionBox();
 }
 
 const sf::FloatRect Player::GetGlobalBounds() const

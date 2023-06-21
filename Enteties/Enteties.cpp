@@ -92,18 +92,29 @@ namespace Map
         m_sprite.setTexture(m_texture);
 
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
-        m_sprite.setPosition(sf::Vector2f(0, WINDOWY - m_sprite.getGlobalBounds().height));
+        m_sprite.setOrigin(sf::Vector2f(m_sprite.getGlobalBounds().width/2,m_sprite.getGlobalBounds().height/2));
+        // Build the vector of floor tiles 
+        int numberTiles = WINDOWX/FLOORSIZESQUARE;
+        for(int i = 0; i < numberTiles; i++)
+        {
+            sf::Sprite sprite;
+            sprite = m_sprite;
+            sprite.setPosition(sf::Vector2f(i*FLOORSIZESQUARE, WINDOWY - m_sprite.getGlobalBounds().height));
+            m_sprites_vec.push_back(sprite);
+        }
     }
 
     void Floor::draw(sf::RenderWindow *window)
     {
-
-        window->draw(m_sprite);
+        for(auto &sprite: m_sprites_vec)
+        {
+            window->draw(sprite);
+        }
     }
 
-    const sf::Sprite &Floor::getSprite() const
+    const std::vector<sf::Sprite> &Floor::getSprite() const
     {
-        return m_sprite;
+        return m_sprites_vec;
     }
 
     Floor::~Floor()
@@ -117,16 +128,15 @@ namespace Map
 
         m_texture.loadFromImage(sfml_imag);
         m_sprite.setTexture(m_texture);
-        // m_sprite.setTextureRect(sf::IntRect(tileData.posX, tileData.posY, tileData.sizeX, tileData.sizeY)); // set the global bounds of the sprite
-        // TODO: resize the texture to the 50,50
+        
     };
     void Platform::draw(sf::RenderWindow *window)
     {
         window->draw(m_sprite);
     }
-    const sf::Sprite &Platform::getSprite() const
+    const std::vector<sf::Sprite> &Platform::getSprite() const
     {
-        return m_sprite;
+        return m_sprites_vec;
     }
 
     Wall::Wall(const cv::Mat &tile)
@@ -136,17 +146,16 @@ namespace Map
 
         m_texture.loadFromImage(sfml_imag);
         m_sprite.setTexture(m_texture);
-        // m_sprite.setTextureRect(sf::IntRect(tileData.posX, tileData.posY, tileData.sizeX, tileData.sizeY)); // set the global bounds of the sprite
-        //  TODO: resize the texture to the 50,50
+        
     }
 
     void Wall::draw(sf::RenderWindow *window)
     {
         window->draw(m_sprite);
     }
-    const sf::Sprite &Wall::getSprite() const
+    const std::vector<sf::Sprite> &Wall::getSprite() const
     {
-        return m_sprite;
+        return m_sprites_vec;
     }
 
 }

@@ -33,7 +33,7 @@ void Engine::InitPlayer()
 {
     m_main_player = new Player(std::string(TexturesPATH + std::string("Main_Player.png")), sf::Vector2f(m_window->getSize().x / 2, m_window->getSize().x / 2));
     m_pos_player_update = m_main_player->GetPosition().x;
-    m_main_player->SetGroundLevel(sf::Vector2f(0, m_tiles[Map::FloorType::FLOOR]->getSprite().getGlobalBounds().top));
+    m_main_player->SetGroundLevel(sf::Vector2f(0, m_tiles[Map::FloorType::FLOOR]->getSprite().front().getGlobalBounds().top));
 }
 
 void Engine::InitWindow()
@@ -51,7 +51,8 @@ void Engine::run()
         sf::Time elapsed = clock.restart();
         this->updatePollEvents();
         this->update(elapsed);
-        std::cout << m_main_player->GetPosition().x << std::endl;
+        std::cout << "Player Positionx: "<< m_main_player->GetPosition().x << std::endl;
+        std::cout << "Player Positiony: "<< m_main_player->GetPosition().y << std::endl;
         this->render();
     }
 }
@@ -67,14 +68,15 @@ void Engine::updatePollEvents()
 
 void Engine::render()
 {
+    
     m_window->clear(sf::Color::Cyan);
-
     m_map_game->DrawMap(m_window);
     for (auto &i : m_tiles)
     {
         i.second->draw(m_window);
     }
     m_main_player->render(m_window);
+
     m_window->display();
 }
 
@@ -111,16 +113,24 @@ void Engine::updateScrolling(float curr_pos_player)
 void Engine::updateColision()
 {
     // Check if Player bound are colidding with tile the tiles vector
-    for (const auto &i : m_tiles)
+    for (const auto &[tile_type,tile] : m_tiles)
     {
-
-        if (m_main_player->GetGlobalBounds().top + m_main_player->GetGlobalBounds().height >= i.second->getSprite().getGlobalBounds().top)
+        if(tile_type == Map::FloorType::FLOOR)
         {
-            // Check for bottom of player in tile
-            m_main_player->ResetVelocityVertical();
-            m_main_player->SetPosition(sf::Vector2f(m_main_player->GetGlobalBounds().left, i.second->getSprite().getGlobalBounds().top - m_main_player->GetGlobalBounds().height));
-            m_main_player->SetGroundLevel(sf::Vector2f(0, i.second->getSprite().getGlobalBounds().top));
+            for(const auto & floor_tile : tile->getSprite())
+            {
+                if (m_main_player->GetGlobalBounds().intersects(floor_tile.getGlobalBounds()))
+                {
+                    std::cout << "Floor tile Positionx: "<< floor_tile.getPosition().x << std::endl;
+                    std::cout << "Floor tile Positiony: "<< floor_tile.getPosition().y << std::endl;
+                    // Check for bottom of player in tile
+                    m_main_player->ResetVelocityVertical();
+                    m_main_player->SetPosition(sf::Vector2f(m_main_player->GetPosition().x, floor_tile.getPosition().y)); // TODO: SOLVE THIS PROBLEM HERE
+                    m_main_player->SetGroundLevel(sf::Vector2f(0, floor_tile.getGlobalBounds().top));
+                }
+            }
         }
+
     }
 
     // Make Player Colide with the left wall everytime it moves

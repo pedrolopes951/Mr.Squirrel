@@ -41,7 +41,7 @@ namespace Map
     public:
         virtual ~ITiles(){};
         virtual void draw(sf::RenderWindow *window) = 0;
-        virtual const sf::Sprite &getSprite() const = 0;
+        virtual const std::vector<sf::Sprite> &getSprite() const = 0;
     };
 
     struct Floor : public ITiles
@@ -49,35 +49,40 @@ namespace Map
         Floor(const cv::Mat &tile);
         ~Floor();
         void draw(sf::RenderWindow *window);
-        const sf::Sprite &getSprite() const override ;
+        const std::vector<sf::Sprite> &getSprite() const override ;
 
     private:
         sf::Texture m_texture;
         sf::Sprite m_sprite;
+        std::vector<sf::Sprite> m_sprites_vec;
     };
 
     struct Platform : public ITiles
     {
         Platform(const cv::Mat &tile);
         void draw(sf::RenderWindow *window) override;
-        const sf::Sprite &getSprite() const override;
+        const std::vector<sf::Sprite> &getSprite() const override;
         ~Platform(){};
 
     private:
         sf::Texture m_texture;
         sf::Sprite m_sprite;
+                std::vector<sf::Sprite> m_sprites_vec;
+
     };
     struct Wall : public ITiles
     {
 
         Wall(const cv::Mat &tile);
         void draw(sf::RenderWindow *window) override;
-        const sf::Sprite &getSprite() const override;
+        const std::vector<sf::Sprite> &getSprite() const override;
         ~Wall(){};
 
     private:
         sf::Texture m_texture;
         sf::Sprite m_sprite;
+                std::vector<sf::Sprite> m_sprites_vec;
+
     };
 
     struct TileFactory

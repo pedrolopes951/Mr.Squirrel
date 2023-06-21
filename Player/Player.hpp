@@ -28,6 +28,10 @@ public:
     void render(sf::RenderWindow* window);
     void update(sf::Time& elapsed_time, sf::Event& events);
 
+    //Check for collitions
+    void checkCollitionsTiles(const sf::Sprite& sprite);
+    void checkCollitionsWindow(const sf::View& view);
+
     // Getter
     const sf::FloatRect GetGlobalBounds() const;  
     const sf::Vector2f GetPosition() const;
@@ -62,9 +66,12 @@ private:
     sf::Texture m_texture;
     std::map<PlayerDir,sf::Sprite> m_sprites;
     sf::Sprite m_drawn_sprite;
+    // Collition box to track the drawn_sprite
+    sf::FloatRect m_collition_box{}; 
     sf::Vector2f m_position;
     
     // Functions
+    void updateCollitionBox();
     void UpdatePhysics(sf::Time &elapsed_time);
     void UpdateForwardMovement(sf::Time &elapsed_time, sf::Event& event);
     void UpdateJumpingMechanics(sf::Time& elapsed_time, sf::Event& event);
