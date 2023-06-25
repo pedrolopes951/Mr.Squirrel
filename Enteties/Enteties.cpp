@@ -39,7 +39,6 @@ namespace Map
             sprite.setTexture(texture);
             m_map_sprite.push_back(sprite);
         }
-        std::cout << typeid(m_map_sprite[1]).name() << std::endl;
 
         m_total_map_size.x = m_map_sprite.back().getPosition().x;
         for (size_t i = 0; i < NUMBERMAPS; i++)
@@ -92,10 +91,9 @@ namespace Map
         m_sprite.setTexture(m_texture);
 
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
-        m_sprite.setOrigin(sf::Vector2f(m_sprite.getGlobalBounds().width/2,m_sprite.getGlobalBounds().height/2));
-        // Build the vector of floor tiles 
-        int numberTiles = WINDOWX/FLOORSIZESQUARE;
-        for(int i = 0; i < numberTiles; i++)
+        // Build the vector of floor tiles
+        int numberTiles = WINDOWX / FLOORSIZESQUARE;
+        for (int i = 0; i < numberTiles; i++)
         {
             sf::Sprite sprite;
             sprite = m_sprite;
@@ -106,7 +104,7 @@ namespace Map
 
     void Floor::draw(sf::RenderWindow *window)
     {
-        for(auto &sprite: m_sprites_vec)
+        for (auto &sprite : m_sprites_vec)
         {
             window->draw(sprite);
         }
@@ -128,7 +126,6 @@ namespace Map
 
         m_texture.loadFromImage(sfml_imag);
         m_sprite.setTexture(m_texture);
-        
     };
     void Platform::draw(sf::RenderWindow *window)
     {
@@ -146,7 +143,6 @@ namespace Map
 
         m_texture.loadFromImage(sfml_imag);
         m_sprite.setTexture(m_texture);
-        
     }
 
     void Wall::draw(sf::RenderWindow *window)
