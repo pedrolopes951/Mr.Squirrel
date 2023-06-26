@@ -93,11 +93,11 @@ namespace Map
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
         // Build the vector of floor tiles
         int numberTiles = WINDOWX / FLOORSIZESQUARE;
-        for (int i = 0; i < numberTiles; i++)
+        for (int i = 0; i < numberTiles +1 ; i++)
         {
             sf::Sprite sprite;
             sprite = m_sprite;
-            sprite.setPosition(sf::Vector2f(i*FLOORSIZESQUARE, WINDOWY - m_sprite.getGlobalBounds().height));
+            sprite.setPosition(sf::Vector2f(i * FLOORSIZESQUARE, WINDOWY - m_sprite.getGlobalBounds().height));
             m_sprites_vec.push_back(sprite);
         }
     }
@@ -110,6 +110,24 @@ namespace Map
         }
     }
 
+    void Floor::updateTiles(const sf::View &window_view)
+    {
+
+        if (!m_sprites_vec.empty())
+        {
+
+            // Check pre last tile that the view has passed the last tile then add another after the end
+            if (window_view.getCenter().x + window_view.getSize().x/2 > m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().left + m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().width)
+            {
+                // Make the tile in the begginging go the end with a new position (circula way)
+                m_sprites_vec.begin()->setPosition(sf::Vector2f(m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().left + m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().width, m_sprites_vec.begin()->getPosition().y));
+                // Add new one to the vector after the
+                m_sprites_vec.push_back(std::move(*m_sprites_vec.begin()));
+                m_sprites_vec.erase(m_sprites_vec.begin());
+            }
+        }
+        std::cout << m_sprites_vec.size() << std::endl;
+    }
     const std::vector<sf::Sprite> &Floor::getSprite() const
     {
         return m_sprites_vec;
@@ -127,6 +145,10 @@ namespace Map
         m_texture.loadFromImage(sfml_imag);
         m_sprite.setTexture(m_texture);
     };
+    void Platform::updateTiles(const sf::View &window_view)
+    {
+        // Get View Position and place the tiles only on the view of it
+    }
     void Platform::draw(sf::RenderWindow *window)
     {
         window->draw(m_sprite);
@@ -144,6 +166,10 @@ namespace Map
         m_texture.loadFromImage(sfml_imag);
         m_sprite.setTexture(m_texture);
     }
+    void Wall::updateTiles(const sf::View &window_view)
+    {
+        // Get View Position and place the tiles only on the view of it
+    }
 
     void Wall::draw(sf::RenderWindow *window)
     {
@@ -153,5 +179,4 @@ namespace Map
     {
         return m_sprites_vec;
     }
-
 }

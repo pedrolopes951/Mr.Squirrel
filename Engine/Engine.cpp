@@ -86,6 +86,10 @@ void Engine::update(sf::Time &elapsed_time)
     float curr_pos_player = m_main_player->GetPosition().x;
     updateScrolling(curr_pos_player);
     updateColision();
+    for (auto &i : m_tiles)
+    {
+        i.second->updateTiles(m_view);
+    }
 }
 
 void Engine::updateScrolling(float curr_pos_player)
