@@ -20,6 +20,7 @@ message(STATUS "OpenCV include directories: ${OpenCV_INCLUDE_DIRS}")
 add_definitions(-DTexturesPATH="${CMAKE_BINARY_DIR}/Textures/")
 add_definitions(-DFONTPATH="${CMAKE_BINARY_DIR}/Fonts/")
 
+add_subdirectory(utils)
 add_subdirectory(Engine)
 add_subdirectory(Enteties)
 add_subdirectory(Executable)

@@ -139,15 +139,53 @@ namespace Map
 
     Platform::Platform(const cv::Mat &tile)
     {
-        sf::Image sfml_imag;
-        sfml_imag.create(tile.cols, tile.rows, tile.ptr());
+        sf::Image sfml_image; // Create a sfml image with the dimention of the pixels matrix of the cv object
+        sfml_image.create(tile.cols, tile.rows);
 
-        m_texture.loadFromImage(sfml_imag);
+        // Iterate over each pixel in the tile matrix
+        for (int y = 0; y < tile.rows; y++)
+        {
+            for (int x = 0; x < tile.cols; x++)
+            {
+                // Retrieve the color value of the current pixel
+                cv::Vec3b color = tile.at<cv::Vec3b>(y, x);
+
+                // Create an SFML color using the RGB values from the OpenCV color channels
+                sf::Color sfml_color(color[2], color[1], color[0]);
+
+                // Set the pixel at (x, y) in the SFML image with the corresponding SFML color
+                sfml_image.setPixel(x, y, sfml_color);
+            }
+        }
+
+        m_texture.loadFromImage(sfml_image);
         m_sprite.setTexture(m_texture);
+
     };
     void Platform::updateTiles(const sf::View &window_view)
     {
-        // Get View Position and place the tiles only on the view of it
+        // Get View Position and place the tiles only on the view is passed the first window size
+        if(window_view.getCenter().x - window_view.getSize().x/2 > scene_iter*WINDOWX)
+        {
+            // Get platform tiles
+            std::vector<std::vector<sf::Sprite>> scene_vector =  VectorUtils::RandomTilesVec<sf::Sprite>(rand(),MAXNUMBEROFTILES,MAXNUMBEROFTILES);
+            // Define region to build each platform int randNum = rand()%(max-min + 1) + min;
+            float x_limit = static_cast<float>(rand()%((scene_iter + 1)*WINDOWX - scene_iter*WINDOWX) + scene_iter*WINDOWX);
+            float y_limit = static_cast<float>(rand()%( MAXPLATFORMHEIGHT- (PLAYEDIM-PLAYEDIMYOFFSET)) + (PLAYEDIM-PLAYEDIMYOFFSET));
+            // Iterate over scene vector and implement the logic for the placement of each vector inside the Window size
+            for(auto& vec : scene_vector)
+            {
+                for(auto&sprites_vec : vec)
+                {
+                    sprites_vec = m_sprite;
+                    // 
+                }
+                
+            }
+            scene_iter++;
+        }
+        
+
     }
     void Platform::draw(sf::RenderWindow *window)
     {

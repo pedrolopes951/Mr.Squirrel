@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
 #include "SFML/Graphics.hpp"
 #include <opencv4/opencv2/opencv.hpp>
-
+#include "Runtime.hpp"
 namespace Map
 {
 
@@ -52,7 +52,7 @@ namespace Map
     private:
         sf::Texture m_texture;
         sf::Sprite m_sprite;
-        std::vector<sf::Sprite> m_sprites_vec;
+        std::vector<sf::Sprite> m_sprites_vec{};
     };
 
     struct Platform : public ITiles
@@ -67,7 +67,8 @@ namespace Map
     private:
         sf::Texture m_texture;
         sf::Sprite m_sprite;
-        std::vector<sf::Sprite> m_sprites_vec;
+        std::vector<sf::Sprite> m_sprites_vec{};
+        int scene_iter{1};
     };
     struct Wall : public ITiles
     {

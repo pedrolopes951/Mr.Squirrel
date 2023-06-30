@@ -18,8 +18,9 @@ void Engine::InitTiles()
 {
     // Load the image using OpenCV
     cv::Mat image_floor = cv::imread(TexturesPATH + std::string("Tiles/Grass/Grass_13-128x128.png"), cv::IMREAD_COLOR);
+    cv::Mat image_platform = cv::imread(TexturesPATH + std::string("Tiles/Bricks/Bricks_01-128x128.png"), cv::IMREAD_COLOR);
 
-    if (image_floor.empty())
+    if (image_floor.empty() || image_platform.empty())
     {
         std::cerr << "Failed to load the image." << std::endl;
         throw(std::string("Failed to load the image."));
@@ -27,6 +28,11 @@ void Engine::InitTiles()
 
     // Floor
     m_tiles[Map::FloorType::FLOOR] = Map::TileFactory::createTile(image_floor, Map::FloorType::FLOOR);
+
+    // Platform
+    m_tiles[Map::FloorType::PLATFORM] = Map::TileFactory::createTile(image_platform, Map::FloorType::PLATFORM);
+
+
 }
 
 void Engine::InitPlayer()
