@@ -65,6 +65,13 @@ namespace Map
         ~Platform(){};
 
     private:
+        enum class Scenes{
+            SCENE1,
+            SCENE2,
+            SCENE3,
+            NUMBERSCENES
+        };
+        void createScenes(sf::RenderWindow * window);
         sf::Texture m_texture;
         sf::Sprite m_sprite;
         std::vector<sf::Sprite> m_sprites_vec{};
