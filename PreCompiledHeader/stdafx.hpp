@@ -6,6 +6,7 @@
 #include <map>
 #include <array>
 #include <cmath>
+#include <numeric>
 
 
 constexpr int PLAYEDIM = 32;
@@ -21,5 +22,7 @@ constexpr int NUMBEROFTILESX= 32;
 constexpr int NUMBEROFTILESY= 32;
 constexpr float MAINWINDOWHEIGHT = 600.f;
 constexpr float FLOORSIZESQUARE = 50.f;
+constexpr float OFFSETSCENEX = 20.f;
+constexpr float OFFSETSCENEY = 20.f;
 constexpr float GROUNDLEVEL =  MAINWINDOWHEIGHT - FLOORSIZESQUARE;
 

@@ -93,7 +93,7 @@ namespace Map
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
         // Build the vector of floor tiles
         int numberTiles = WINDOWX / FLOORSIZESQUARE;
-        for (int i = 0; i < numberTiles +1 ; i++)
+        for (int i = 0; i < numberTiles + 1; i++)
         {
             sf::Sprite sprite;
             sprite = m_sprite;
@@ -117,7 +117,7 @@ namespace Map
         {
 
             // Check pre last tile that the view has passed the last tile then add another after the end
-            if (window_view.getCenter().x + window_view.getSize().x/2 > m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().left + m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().width)
+            if (window_view.getCenter().x + window_view.getSize().x / 2 > m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().left + m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().width)
             {
                 // Make the tile in the begginging go the end with a new position (circula way)
                 m_sprites_vec.begin()->setPosition(sf::Vector2f(m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().left + m_sprites_vec[m_sprites_vec.size() - 1].getGlobalBounds().width, m_sprites_vec.begin()->getPosition().y));
@@ -126,7 +126,6 @@ namespace Map
                 m_sprites_vec.erase(m_sprites_vec.begin());
             }
         }
-        std::cout << m_sprites_vec.size() << std::endl;
     }
     const std::vector<sf::Sprite> &Floor::getSprite() const
     {
@@ -160,36 +159,63 @@ namespace Map
 
         m_texture.loadFromImage(sfml_image);
         m_sprite.setTexture(m_texture);
-
+        m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
     };
     void Platform::updateTiles(const sf::View &window_view)
     {
         // Get View Position and place the tiles only on the view is passed the first window size
-        if(window_view.getCenter().x - window_view.getSize().x/2 > scene_iter*WINDOWX)
+        if (window_view.getCenter().x - window_view.getSize().x / 2 > m_scene_iter * WINDOWX)
         {
+            std::cout << "Window Left Side X" << window_view.getCenter().x - window_view.getSize().x/2 << std::endl;
             // Get platform tiles
-            std::vector<std::vector<sf::Sprite>> scene_vector =  VectorUtils::RandomTilesVec<sf::Sprite>(rand(),MAXNUMBEROFTILES,MAXNUMBEROFTILES);
-            // Define region to build each platform int randNum = rand()%(max-min + 1) + min;
-            float x_limit = static_cast<float>(rand()%((scene_iter + 1)*WINDOWX - scene_iter*WINDOWX) + scene_iter*WINDOWX);
-            float y_limit = static_cast<float>(rand()%( MAXPLATFORMHEIGHT- (PLAYEDIM-PLAYEDIMYOFFSET)) + (PLAYEDIM-PLAYEDIMYOFFSET));
-            // Iterate over scene vector and implement the logic for the placement of each vector inside the Window size
-            for(auto& vec : scene_vector)
+            std::vector<std::vector<sf::Sprite>> scene_vector = VectorUtils::RandomTilesVec<sf::Sprite>(MAXNUMBEROFTILES, MAXNUMBEROFVEC);
+            // Lambda function to count the total number of elements
+            auto countElements = [](const std::vector<std::vector<sf::Sprite>> &vectorOfVectors)
             {
-                for(auto&sprites_vec : vec)
+                return std::accumulate(vectorOfVectors.begin(), vectorOfVectors.end(), 0,
+                                       [](int sum, const std::vector<sf::Sprite> &vector) 
+                                       {
+                                           return sum + vector.size();
+                                       });
+            };
+            std::cout << "Total size of vector : " << countElements(scene_vector) << std::endl;
+            int total_element_size = countElements(scene_vector) * m_sprite.getGlobalBounds().width; 
+            // Define region to build each platform int randNum = rand()%(max-min + 1) + min;
+            float x_limit = static_cast<float>(rand() % ((int)(window_view.getCenter().x + WINDOWX) -  (int)(window_view.getCenter().x + WINDOWX/2)) + (int)(window_view.getCenter().x + WINDOWX/2));
+            float y_limit = static_cast<float>(rand() % (MAXPLATFORMHEIGHT - (PLAYEDIM - PLAYEDIMYOFFSET)) + (PLAYEDIM - PLAYEDIMYOFFSET));
+            float get_pos_last_tile_x{x_limit};
+            float get_pos_last_tile_y{y_limit};
+            float dx{0};
+            float dy{0};
+            for (auto &vec : scene_vector)
+            {
+                // Iterate over scene vector and implement the logic for the placement of each vector inside the Window size
+                int tile_of_vec{0};
+                m_sprite.setPosition(get_pos_last_tile_x+dx,get_pos_last_tile_y+dy);
+                for (auto &sprites_vec : vec)
                 {
                     sprites_vec = m_sprite;
-                    // 
+                    // Put the vecs on the correct limits. 
+                    sprites_vec.setPosition(x_limit + tile_of_vec * m_sprite.getGlobalBounds().left + m_sprite.getGlobalBounds().width, y_limit + tile_of_vec * m_sprite.getGlobalBounds().top + m_sprite.getGlobalBounds().height);
+                    tile_of_vec++;
                 }
-                
+                get_pos_last_tile_x = vec.back().getPosition().x + m_sprite.getGlobalBounds().width;
+                get_pos_last_tile_y = vec.back().getPosition().y;
+                // create ramdon dx and dy for each vector of tiles in a way that they are contained inside the window scene in y and x
+                dx = static_cast<float>(rand() % (int)(((WINDOWX - OFFSETSCENEX)- total_element_size)/scene_vector.size() + get_pos_last_tile_x));
+                dy = static_cast<float>(rand() % (int)(-get_pos_last_tile_y-(PLAYEDIM+OFFSETSCENEY) + WINDOWY-PLAYEDIM-m_sprite.getGlobalBounds().width));
+            m_sprites_vec = vec;
             }
-            scene_iter++;
+            m_scene_iter++;
         }
-        
-
     }
     void Platform::draw(sf::RenderWindow *window)
     {
-        window->draw(m_sprite);
+        for(auto& i : m_sprites_vec)
+        {
+            window->draw(i);
+        }
+        
     }
     const std::vector<sf::Sprite> &Platform::getSprite() const
     {

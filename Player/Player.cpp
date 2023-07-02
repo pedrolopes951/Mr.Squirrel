@@ -197,8 +197,7 @@ void Player::checkCollitionsTiles(const sf::Sprite &sprite)
 {
     if (m_collition_box.intersects(sprite.getGlobalBounds()))
     {
-        std::cout << "Floor tile Positionx: " << sprite.getPosition().x << std::endl;
-        std::cout << "Floor tile Positiony: " << sprite.getPosition().y << std::endl;
+
         // Check for bottom of player in tile
         this->ResetVelocityVertical();
         this->SetPosition(sf::Vector2f( this->GetPosition().x,sprite.getGlobalBounds().top - m_collition_box.height)); 

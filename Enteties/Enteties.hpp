@@ -68,7 +68,7 @@ namespace Map
         sf::Texture m_texture;
         sf::Sprite m_sprite;
         std::vector<sf::Sprite> m_sprites_vec{};
-        int scene_iter{1};
+        int m_scene_iter{1};
     };
     struct Wall : public ITiles
     {

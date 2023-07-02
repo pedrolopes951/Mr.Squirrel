@@ -66,5 +66,7 @@ target_compile_features(MyPCH PUBLIC cxx_std_11)
 target_compile_options(MyPCH PRIVATE -Winvalid-pch)
 target_precompile_headers(MyPCH PUBLIC ${PCH_HEADER})
 
+enable_testing()
+
 
 
