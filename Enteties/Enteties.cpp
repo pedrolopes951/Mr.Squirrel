@@ -160,55 +160,76 @@ namespace Map
         m_texture.loadFromImage(sfml_image);
         m_sprite.setTexture(m_texture);
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
+        // First location for drawing tiles is last place of the tile
+        m_last_tile_pos_x = WINDOWX;
     };
     void Platform::updateTiles(const sf::View &window_view)
     {
         // Get View Position and place the tiles only on the view is passed the first window size
-        if (window_view.getCenter().x - window_view.getSize().x/2  > m_scene_iter * WINDOWX)
+        if (window_view.getCenter().x - window_view.getSize().x / 2 > m_last_tile_pos_x)
         {
+            this->createScenes(&window_view);
+            m_last_tile_pos_x = m_sprites_vec.back().getGlobalBounds().left + m_sprites_vec.back().getGlobalBounds().width;
         }
     }
     void Platform::draw(sf::RenderWindow *window)
     {
-        for(auto& i : m_sprites_vec)
+        for (auto &i : m_sprites_vec)
         {
             window->draw(i);
         }
-        
-    }                                                  
+    }
     const std::vector<sf::Sprite> &Platform::getSprite() const
     {
         return m_sprites_vec;
     }
 
-    void Platform::createScenes(sf::RenderWindow *window)
+    void Platform::createScenes(const sf::View *window)
     {
-        int get_scene = rand()%(int)(Scenes::NUMBERSCENES);
+        int get_scene = rand() % (int)(Scenes::NUMBERSCENES);
         switch (static_cast<Scenes>(get_scene))
         {
         case Scenes::SCENE1:
             /* This scene will have 3 tiles in the middle of the window range  */
             m_sprites_vec.clear();
-            for(int i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 sf::Sprite sprite;
                 sprite = m_sprite;
-                float x = (m_scene_iter+1)*window->getSize().x + (window->getSize().x/2)+(i-1)*sprite.getGlobalBounds().width;
+                float x = m_last_tile_pos_x + (window->getSize().x) + (i + 1) * sprite.getGlobalBounds().width;
                 float y = 400.f;
-                sprite.setPosition(x,y);
+                sprite.setPosition(x, y);
                 m_sprites_vec.push_back(sprite);
             }
             break;
         case Scenes::SCENE2:
+            m_sprites_vec.clear();
+            for (int i = 0; i < 2; i++)
+            {
+                sf::Sprite sprite;
+                sprite = m_sprite;
+                float x = m_last_tile_pos_x + (window->getSize().x ) + (i + 1) * sprite.getGlobalBounds().width;
+                float y = 400.f;
+                sprite.setPosition(x, y);
+                m_sprites_vec.push_back(sprite);
+            }
             /* code */
             break;
         case Scenes::SCENE3:
-            /* code */
+            m_sprites_vec.clear();
+            for (int i = 0; i < 2; i++)
+            {
+                sf::Sprite sprite;
+                sprite = m_sprite;
+                float x = m_last_tile_pos_x + (window->getSize().x ) + (i + 1) * sprite.getGlobalBounds().width;
+                float y = 400.f;
+                sprite.setPosition(x, y);
+                m_sprites_vec.push_back(sprite);
+            }
             break;
         default:
             break;
         }
-
     }
 
     Wall::Wall(const cv::Mat &tile)

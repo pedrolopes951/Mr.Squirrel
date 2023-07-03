@@ -132,6 +132,13 @@ void Engine::updateColision()
                 m_main_player->checkCollitionsTiles(floor_tile);
             }
         }
+        if (tile_type == Map::FloorType::PLATFORM)
+        {
+            for (const auto &floor_tile : tile->getSprite())
+            {
+                m_main_player->checkCollitionsTiles(floor_tile);
+            }
+        }
     }
     m_main_player->checkCollitionsWindow(m_view);
     

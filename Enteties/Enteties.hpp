@@ -71,11 +71,11 @@ namespace Map
             SCENE3,
             NUMBERSCENES
         };
-        void createScenes(sf::RenderWindow * window);
+        void createScenes(const sf::View  * window);
         sf::Texture m_texture;
         sf::Sprite m_sprite;
         std::vector<sf::Sprite> m_sprites_vec{};
-        int m_scene_iter{1};
+        int m_last_tile_pos_x{};
     };
     struct Wall : public ITiles
     {

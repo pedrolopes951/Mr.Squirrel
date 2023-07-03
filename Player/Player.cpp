@@ -147,7 +147,7 @@ void Player::updateCollitionBox()
 {
     m_collition_box.left = m_drawn_sprite.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
     m_collition_box.top = m_drawn_sprite.getGlobalBounds().top;              // OFFSET to collition;
-    m_collition_box.height = m_drawn_sprite.getGlobalBounds().height;
+    m_collition_box.height = m_drawn_sprite.getGlobalBounds().height - 5.f;
     m_collition_box.width = m_drawn_sprite.getGlobalBounds().width - 2 * PLAYEDIM;
 }
 
@@ -197,11 +197,15 @@ void Player::checkCollitionsTiles(const sf::Sprite &sprite)
 {
     if (m_collition_box.intersects(sprite.getGlobalBounds()))
     {
-
         // Check for bottom of player in tile
         this->ResetVelocityVertical();
         this->SetPosition(sf::Vector2f( this->GetPosition().x,sprite.getGlobalBounds().top - m_collition_box.height)); 
         this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y));
+    }
+    // Check Collision to tiles from top
+    if(m_collition_box.contains(sprite.getGlobalBounds().left,sprite.getGlobalBounds().top+sprite.getGlobalBounds().height))
+    {
+        this->SetPosition(sf::Vector2f( sprite.getGlobalBounds().left,sprite.getGlobalBounds().top+sprite.getGlobalBounds().height)); 
     }
 }
 
