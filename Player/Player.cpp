@@ -172,19 +172,19 @@ void Player::render(sf::RenderWindow *window)
 
     // window->draw(center_sprite);
 
-    sf::RectangleShape rectShape(sf::Vector2f(m_collition_box.width, m_collition_box.height));
-    rectShape.setPosition(m_collition_box.left, m_collition_box.top);
-    rectShape.setFillColor(sf::Color::Transparent);
-    rectShape.setOutlineThickness(2);
-    rectShape.setOutlineColor(sf::Color::Red);
-    window->draw(rectShape);
-    // Create a blue circle shape with a center in collition box
-    sf::CircleShape center_box(5.f);
-    center_box.setFillColor(sf::Color::Cyan);
+    // sf::RectangleShape rectShape(sf::Vector2f(m_collition_box.width, m_collition_box.height));
+    // rectShape.setPosition(m_collition_box.left, m_collition_box.top);
+    // rectShape.setFillColor(sf::Color::Transparent);
+    // rectShape.setOutlineThickness(2);
+    // rectShape.setOutlineColor(sf::Color::Red);
+    // window->draw(rectShape);
+    // // Create a blue circle shape with a center in collition box
+    // sf::CircleShape center_box(5.f);
+    // center_box.setFillColor(sf::Color::Cyan);
 
-    // Position the center_box at coordinates
-    center_box.setPosition(m_collition_box.left, m_collition_box.top);
-    window->draw(center_box);
+    // // Position the center_box at coordinates
+    // center_box.setPosition(m_collition_box.left, m_collition_box.top);
+    // window->draw(center_box);
 }
 
 void Player::update(sf::Time &elapsed_time, sf::Event &events)
