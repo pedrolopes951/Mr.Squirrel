@@ -29,7 +29,8 @@ public:
     void update(sf::Time& elapsed_time, sf::Event& events);
 
     //Check for collitions
-    void checkCollitionsTiles(const sf::Sprite& sprite);
+    void checkCollitionsPlatTiles(const sf::Sprite& sprite);
+    void checkCollitionsFloorTiles(const sf::Sprite& sprite);
     void checkCollitionsWindow(const sf::View& view);
 
     // Getter

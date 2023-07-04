@@ -129,14 +129,14 @@ void Engine::updateColision()
         {
             for (const auto &floor_tile : tile->getSprite())
             {
-                m_main_player->checkCollitionsTiles(floor_tile);
+                m_main_player->checkCollitionsFloorTiles(floor_tile);
             }
         }
         if (tile_type == Map::FloorType::PLATFORM)
         {
             for (const auto &floor_tile : tile->getSprite())
             {
-                m_main_player->checkCollitionsTiles(floor_tile);
+                m_main_player->checkCollitionsPlatTiles(floor_tile);
             }
         }
     }

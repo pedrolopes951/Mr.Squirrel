@@ -172,19 +172,19 @@ void Player::render(sf::RenderWindow *window)
 
     // window->draw(center_sprite);
 
-    // sf::RectangleShape rectShape(sf::Vector2f(m_collition_box.width, m_collition_box.height));
-    // rectShape.setPosition(m_collition_box.left, m_collition_box.top);
-    // rectShape.setFillColor(sf::Color::Transparent);
-    // rectShape.setOutlineThickness(2);
-    // rectShape.setOutlineColor(sf::Color::Red);
-    // window->draw(rectShape);
-    // // Create a blue circle shape with a center in collition box
-    // sf::CircleShape center_box(5.f);
-    // center_box.setFillColor(sf::Color::Cyan);
+    sf::RectangleShape rectShape(sf::Vector2f(m_collition_box.width, m_collition_box.height));
+    rectShape.setPosition(m_collition_box.left, m_collition_box.top);
+    rectShape.setFillColor(sf::Color::Transparent);
+    rectShape.setOutlineThickness(2);
+    rectShape.setOutlineColor(sf::Color::Red);
+    window->draw(rectShape);
+    // Create a blue circle shape with a center in collition box
+    sf::CircleShape center_box(5.f);
+    center_box.setFillColor(sf::Color::Cyan);
 
-    // // Position the center_box at coordinates
-    // center_box.setPosition(m_collition_box.left, m_collition_box.top);
-    // window->draw(center_box);
+    // Position the center_box at coordinates
+    center_box.setPosition(m_collition_box.left, m_collition_box.top);
+    window->draw(center_box);
 }
 
 void Player::update(sf::Time &elapsed_time, sf::Event &events)
@@ -193,7 +193,28 @@ void Player::update(sf::Time &elapsed_time, sf::Event &events)
     updateCollitionBox();
 }
 
-void Player::checkCollitionsTiles(const sf::Sprite &sprite)
+void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
+{
+    if (m_collition_box.intersects(sprite.getGlobalBounds()))
+    {
+        float plat_top  = sprite.getGlobalBounds().top;
+        // Handle the collition for top of the platform
+        if(m_collition_box.top + sprite.getGlobalBounds().height <= plat_top)
+        {
+            this->ResetVelocityVertical();
+            this->SetPosition(sf::Vector2f( this->GetPosition().x,plat_top - m_collition_box.height)); 
+            this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y));
+        }
+        // Handle the collision left side of  platform and is lower than the necessary high to go over the platform
+        if((m_collition_box.left + m_collition_box.width) >= sprite.getGlobalBounds().left && m_collition_box.top + m_collition_box.height> plat_top && m_collition_box.top <= plat_top + sprite.getGlobalBounds().height)
+        {
+            this->SetPosition(sf::Vector2f(sprite.getGlobalBounds().left,this->GetPosition().y)); 
+        }
+    }
+    
+}
+
+void Player::checkCollitionsFloorTiles(const sf::Sprite &sprite)
 {
     if (m_collition_box.intersects(sprite.getGlobalBounds()))
     {
@@ -201,11 +222,6 @@ void Player::checkCollitionsTiles(const sf::Sprite &sprite)
         this->ResetVelocityVertical();
         this->SetPosition(sf::Vector2f( this->GetPosition().x,sprite.getGlobalBounds().top - m_collition_box.height)); 
         this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y));
-    }
-    // Check Collision to tiles from top
-    if(m_collition_box.contains(sprite.getGlobalBounds().left,sprite.getGlobalBounds().top+sprite.getGlobalBounds().height))
-    {
-        this->SetPosition(sf::Vector2f( sprite.getGlobalBounds().left,sprite.getGlobalBounds().top+sprite.getGlobalBounds().height)); 
     }
 }
 
