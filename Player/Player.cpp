@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(const std::string &textures_path, sf::Vector2f m_position) : m_position(m_position)
+Player::Player(const std::string &textures_path, sf::Vector2f m_position) : m_position(m_position), m_ray{sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 0.f)}
 {
     this->InitVariables();
     this->InitTextureSprite(textures_path);
@@ -41,21 +41,41 @@ void Player::InitTextureSprite(const std::string &textures_path)
 
 void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
 {
-    sf::Sprite sprite;
-    sprite.setTexture(m_texture);
-    sprite.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
-    std::cout << " Width : " << sprite.getGlobalBounds().width << " Height : " << sprite.getGlobalBounds().height << std::endl;
-    sprite.setScale(3.f, 3.f); // Scale the sprite to the desired size
+    sf::Sprite sprite_old;
+    sprite_old.setTexture(m_texture);
+    sprite_old.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
+    sprite_old.setScale(3.f, 3.f); // Scale the sprite to the desired size
+    sf::IntRect rect_cut = sprite_old.getTextureRect();
+    // rect_cut.left = sprite_old.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
+    // rect_cut.top = sprite_old.getGlobalBounds().top + 20.f;              // OFFSET to collition;
+    // rect_cut.height = sprite_old.getGlobalBounds().height - 22.f;
+    // rect_cut.width = sprite_old.getGlobalBounds().width - 2 * PLAYEDIM;
+    // Create a new image from the texture rectangle
+    sf::Image image = m_texture.copyToImage();
+    image.create(rect_cut.width, rect_cut.height, sf::Color::Transparent);
 
-    sprite.setPosition(m_position);
+    // Copy the pixels from the original image to the new image
+    for (int y = 0; y < rect_cut.height; y++)
+    {
+        for (int x = 0; x < rect_cut.width; x++)
+        {
+            sf::Color pixel = m_texture.copyToImage().getPixel(rect_cut.left + x, rect_cut.top + y);
+            image.setPixel(x, y, pixel);
+        }
+    }
+    sf::Sprite sprite_new = sprite_old;
+    sprite_new.setTextureRect(rect_cut);
 
-    m_sprites.insert(std::make_pair(dir, sprite));
+    sprite_new.setPosition(m_position);
+
+    m_sprites.insert(std::make_pair(dir, sprite_new));
 }
 
 void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
 {
+
     m_horizontalaccelaration = m_speed * elapsed_time.asSeconds(); // Dsitance based on the elapsed time of each frame
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) )
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
         if (m_move_right_stepr)
         {
@@ -136,7 +156,7 @@ void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
         }
     }
     UpdatePhysics(elapsed_time);
-    if (m_collition_box.top + m_collition_box.height >= m_ground_level.y)
+    if (m_collition_box.top + m_collition_box.height > m_ground_level.y)
     {
         m_on_ground = true;
         m_is_jumping = false;
@@ -146,17 +166,21 @@ void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
 void Player::updateCollitionBox()
 {
     m_collition_box.left = m_drawn_sprite.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
-    m_collition_box.top = m_drawn_sprite.getGlobalBounds().top;              // OFFSET to collition;
-    m_collition_box.height = m_drawn_sprite.getGlobalBounds().height - 5.f;
+    m_collition_box.top = m_drawn_sprite.getGlobalBounds().top + 20.f;              // OFFSET to collition;
+    m_collition_box.height = m_drawn_sprite.getGlobalBounds().height - 22.f;
     m_collition_box.width = m_drawn_sprite.getGlobalBounds().width - 2 * PLAYEDIM;
+
 }
 
 void Player::UpdatePhysics(sf::Time &elapsed_time)
 {
-    m_verticalaccelaration += m_gravity * elapsed_time.asSeconds();
-    if (m_verticalaccelaration > m_maxfallspeed)
-        m_verticalaccelaration = m_maxfallspeed;
-    m_position.y += m_verticalaccelaration * elapsed_time.asSeconds();
+    if (!m_on_ground)
+    {
+        m_verticalaccelaration += m_gravity * elapsed_time.asSeconds();
+        if (m_verticalaccelaration > m_maxfallspeed)
+            m_verticalaccelaration = m_maxfallspeed;
+        m_position.y += m_verticalaccelaration * elapsed_time.asSeconds();
+    }
 }
 
 void Player::render(sf::RenderWindow *window)
@@ -164,13 +188,13 @@ void Player::render(sf::RenderWindow *window)
     window->draw(m_drawn_sprite);
 
     // Create a red circle shape with a center in sprite
-    // sf::CircleShape center_sprite(5.f);
-    // center_sprite.setFillColor(sf::Color::Red);
+    sf::CircleShape center_sprite(5.f);
+    center_sprite.setFillColor(sf::Color::Red);
 
     // // Position the center_sprite at coordinates
-    // center_sprite.setPosition(m_drawn_sprite.getPosition());
+    center_sprite.setPosition(m_drawn_sprite.getPosition());
 
-    // window->draw(center_sprite);
+    window->draw(center_sprite);
 
     sf::RectangleShape rectShape(sf::Vector2f(m_collition_box.width, m_collition_box.height));
     rectShape.setPosition(m_collition_box.left, m_collition_box.top);
@@ -185,33 +209,37 @@ void Player::render(sf::RenderWindow *window)
     // Position the center_box at coordinates
     center_box.setPosition(m_collition_box.left, m_collition_box.top);
     window->draw(center_box);
+    m_ray.drawRay(*window, *this);
 }
 
 void Player::update(sf::Time &elapsed_time, sf::Event &events)
 {
+    // Update position origin in relation to the collision box origin that follows the player
+    m_ray.updateRayOrigin(sf::Vector2f(m_collition_box.left, m_collition_box.top));
     UpdateForwardMovement(elapsed_time, events);
     updateCollitionBox();
+    // Update direction of the ray given the new position after the update of the movement of the player
+    m_ray.updateRayDirection(sf::Vector2f(m_collition_box.left, m_collition_box.top));
 }
 
 void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
 {
     if (m_collition_box.intersects(sprite.getGlobalBounds()))
     {
-        float plat_top  = sprite.getGlobalBounds().top;
+        float plat_top = sprite.getGlobalBounds().top;
         // Handle the collition for top of the platform
-        if(m_collition_box.top + sprite.getGlobalBounds().height <= plat_top)
+        if (m_collition_box.top + sprite.getGlobalBounds().height <= plat_top)
         {
             this->ResetVelocityVertical();
-            this->SetPosition(sf::Vector2f( this->GetPosition().x,plat_top - m_collition_box.height)); 
-            this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y));
+            this->SetPosition(sf::Vector2f(this->GetPosition().x, plat_top - m_collition_box.height));
+            this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y ));
         }
         // Handle the collision left side of  platform and is lower than the necessary high to go over the platform
-        if((m_collition_box.left + m_collition_box.width) >= sprite.getGlobalBounds().left && m_collition_box.top + m_collition_box.height> plat_top && m_collition_box.top <= plat_top + sprite.getGlobalBounds().height)
+        if ((m_collition_box.left + m_collition_box.width) >= sprite.getGlobalBounds().left && m_collition_box.top + m_collition_box.height > plat_top && m_collition_box.top <= plat_top + sprite.getGlobalBounds().height)
         {
-            this->SetPosition(sf::Vector2f(sprite.getGlobalBounds().left,this->GetPosition().y)); 
+            this->SetPosition(sf::Vector2f(sprite.getGlobalBounds().left, this->GetPosition().y));
         }
     }
-    
 }
 
 void Player::checkCollitionsFloorTiles(const sf::Sprite &sprite)
@@ -220,8 +248,8 @@ void Player::checkCollitionsFloorTiles(const sf::Sprite &sprite)
     {
         // Check for bottom of player in tile
         this->ResetVelocityVertical();
-        this->SetPosition(sf::Vector2f( this->GetPosition().x,sprite.getGlobalBounds().top - m_collition_box.height)); 
-        this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y));
+        this->SetPosition(sf::Vector2f(this->GetPosition().x, sprite.getGlobalBounds().top - m_collition_box.height));
+        this->SetGroundLevel(sf::Vector2f(0, m_collition_box.top + m_collition_box.height));
     }
 }
 
@@ -250,6 +278,11 @@ const float Player::GetHorizontalVelocity() const
     return m_horizontalaccelaration;
 }
 
+const sf::Vector2f Player::GetPositionCollisionBox() const
+{
+    return sf::Vector2f(m_collition_box.left, m_collition_box.top);
+}
+
 void Player::SetPosition(sf::Vector2f position)
 {
     m_position = position;
@@ -265,6 +298,53 @@ void Player::SetGroundLevel(sf::Vector2f ground_level)
     m_ground_level = ground_level;
 }
 
+void Player::setRayDirection(const sf::Vector2f &targetPosition)
+{
+}
+
 Player::~Player()
 {
+}
+
+void Ray::updateRayOrigin(const sf::Vector2f &player_pos)
+{
+    m_rayOrigin = player_pos;
+}
+
+void Ray::updateRayDirection(const sf::Vector2f &target_position)
+{
+    // Calculate the ray direction based on the player's position and the target position
+    sf::Vector2f directionVector = target_position - m_rayOrigin;
+    // Set ray direction based on movement inputs
+    if (directionVector.x > 0.0f) // Moving right
+    {
+        m_rayDirection = sf::Vector2f(1.0f, 0.0f);
+    }
+    else if (directionVector.x < 0.0f) // Moving left
+    {
+        m_rayDirection = sf::Vector2f(-1.0f, 0.0f);
+    }
+    else if (directionVector.y < 0.0f) // Moving up (jumping)
+    {
+        m_rayDirection = sf::Vector2f(0.0f, -1.0f);
+    }
+    else if (directionVector.y > 0.0f) // Moving down (falling)
+    {
+        m_rayDirection = sf::Vector2f(0.0f, 1.0f);
+    }
+    else
+    {
+        m_rayDirection = sf::Vector2f(0.0f, 0.0f); // No movement
+    }
+}
+
+void Ray::drawRay(sf::RenderWindow &window, const Player &player)
+{
+    sf::Vertex line[] =
+        {
+            sf::Vertex(player.GetPositionCollisionBox()),
+            sf::Vertex(player.GetPositionCollisionBox() + m_rayDirection * 100.0f) // Adjust the length of the ray as needed
+        };
+
+    window.draw(line, 2, sf::Lines);
 }
