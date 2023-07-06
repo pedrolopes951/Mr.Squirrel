@@ -41,34 +41,26 @@ void Player::InitTextureSprite(const std::string &textures_path)
 
 void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
 {
-    sf::Sprite sprite_old;
-    sprite_old.setTexture(m_texture);
-    sprite_old.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
-    sprite_old.setScale(3.f, 3.f); // Scale the sprite to the desired size
-    sf::IntRect rect_cut = sprite_old.getTextureRect();
-    // rect_cut.left = sprite_old.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
-    // rect_cut.top = sprite_old.getGlobalBounds().top + 20.f;              // OFFSET to collition;
-    // rect_cut.height = sprite_old.getGlobalBounds().height - 22.f;
-    // rect_cut.width = sprite_old.getGlobalBounds().width - 2 * PLAYEDIM;
-    // Create a new image from the texture rectangle
-    sf::Image image = m_texture.copyToImage();
-    image.create(rect_cut.width, rect_cut.height, sf::Color::Transparent);
+    sf::Sprite sprite;
+    sprite.setTexture(m_texture);
+    sprite.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
+    sprite.setScale(3.f, 3.f); // Scale the sprite to the desired size
+    
+    // Get the texture rectangle from the origin sprite
+    sf::IntRect rect_cut = sprite.getTextureRect();
 
-    // Copy the pixels from the original image to the new image
-    for (int y = 0; y < rect_cut.height; y++)
-    {
-        for (int x = 0; x < rect_cut.width; x++)
-        {
-            sf::Color pixel = m_texture.copyToImage().getPixel(rect_cut.left + x, rect_cut.top + y);
-            image.setPixel(x, y, pixel);
-        }
-    }
-    sf::Sprite sprite_new = sprite_old;
-    sprite_new.setTextureRect(rect_cut);
+    rect_cut.left = sprite.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
+    rect_cut.top = sprite.getGlobalBounds().top + 20.f;              // OFFSET to collition;
+    rect_cut.height = sprite.getGlobalBounds().height - 22.f;
+    rect_cut.width = sprite.getGlobalBounds().width - 2 * PLAYEDIM;
 
-    sprite_new.setPosition(m_position);
+    sprite.setOrigin(sf::Vector2f(10.f,6.f));
+     
+    sprite.setPosition(m_position);
 
-    m_sprites.insert(std::make_pair(dir, sprite_new));
+
+    m_sprites.insert(std::make_pair(dir, sprite));
+
 }
 
 void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
@@ -130,6 +122,12 @@ void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
     {
         i.second.setPosition(m_position);
     }
+    updateCollitionBox();
+    if (m_collition_box.top + m_collition_box.height >= m_ground_level.y)
+    {
+        m_on_ground = true;
+        m_is_jumping = false;
+    }
 }
 
 void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
@@ -156,11 +154,7 @@ void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
         }
     }
     UpdatePhysics(elapsed_time);
-    if (m_collition_box.top + m_collition_box.height > m_ground_level.y)
-    {
-        m_on_ground = true;
-        m_is_jumping = false;
-    }
+    
 }
 
 void Player::updateCollitionBox()
