@@ -25,6 +25,9 @@ struct Ray
     void updateRayOrigin(const sf::Vector2f &player_pos);
     void updateRayDirection(const sf::Vector2f &target_position);
     void drawRay(sf::RenderWindow &window, const Player &player);
+
+    private:
+    bool m_correct_jump{false};
 };
 
 class Player
@@ -46,6 +49,8 @@ public:
     const sf::Vector2f GetPosition() const;
     const float GetHorizontalVelocity() const;
     const sf::Vector2f GetPositionCollisionBox() const;
+    const sf::Vector2f GetSizeCollisionBox() const;
+
 
     // Setter
     void SetPosition(sf::Vector2f position);

@@ -46,13 +46,6 @@ void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
     sprite.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
     sprite.setScale(3.f, 3.f); // Scale the sprite to the desired size
     
-    // Get the texture rectangle from the origin sprite
-    sf::IntRect rect_cut = sprite.getTextureRect();
-
-    rect_cut.left = sprite.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
-    rect_cut.top = sprite.getGlobalBounds().top + 20.f;              // OFFSET to collition;
-    rect_cut.height = sprite.getGlobalBounds().height - 22.f;
-    rect_cut.width = sprite.getGlobalBounds().width - 2 * PLAYEDIM;
 
     sprite.setOrigin(sf::Vector2f(10.f,6.f));
      
@@ -220,19 +213,7 @@ void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
 {
     if (m_collition_box.intersects(sprite.getGlobalBounds()))
     {
-        float plat_top = sprite.getGlobalBounds().top;
-        // Handle the collition for top of the platform
-        if (m_collition_box.top + sprite.getGlobalBounds().height <= plat_top)
-        {
-            this->ResetVelocityVertical();
-            this->SetPosition(sf::Vector2f(this->GetPosition().x, plat_top - m_collition_box.height));
-            this->SetGroundLevel(sf::Vector2f(0, sprite.getPosition().y ));
-        }
-        // Handle the collision left side of  platform and is lower than the necessary high to go over the platform
-        if ((m_collition_box.left + m_collition_box.width) >= sprite.getGlobalBounds().left && m_collition_box.top + m_collition_box.height > plat_top && m_collition_box.top <= plat_top + sprite.getGlobalBounds().height)
-        {
-            this->SetPosition(sf::Vector2f(sprite.getGlobalBounds().left, this->GetPosition().y));
-        }
+        std::cout << "INtersection happended" << std::endl;
     }
 }
 
@@ -277,6 +258,11 @@ const sf::Vector2f Player::GetPositionCollisionBox() const
     return sf::Vector2f(m_collition_box.left, m_collition_box.top);
 }
 
+const sf::Vector2f Player::GetSizeCollisionBox() const
+{
+    return sf::Vector2f(m_collition_box.width, m_collition_box.height);
+}
+
 void Player::SetPosition(sf::Vector2f position)
 {
     m_position = position;
@@ -318,16 +304,18 @@ void Ray::updateRayDirection(const sf::Vector2f &target_position)
     {
         m_rayDirection = sf::Vector2f(-1.0f, 0.0f);
     }
-    else if (directionVector.y < 0.0f) // Moving up (jumping)
+    else if (directionVector.y < 0.0f && m_correct_jump) // Moving up (jumping)
     {
         m_rayDirection = sf::Vector2f(0.0f, -1.0f);
     }
     else if (directionVector.y > 0.0f) // Moving down (falling)
     {
+        m_correct_jump = false;
         m_rayDirection = sf::Vector2f(0.0f, 1.0f);
     }
     else
     {
+        m_correct_jump = true;
         m_rayDirection = sf::Vector2f(0.0f, 0.0f); // No movement
     }
 }
@@ -336,8 +324,8 @@ void Ray::drawRay(sf::RenderWindow &window, const Player &player)
 {
     sf::Vertex line[] =
         {
-            sf::Vertex(player.GetPositionCollisionBox()),
-            sf::Vertex(player.GetPositionCollisionBox() + m_rayDirection * 100.0f) // Adjust the length of the ray as needed
+            sf::Vertex(sf::Vector2f(player.GetPositionCollisionBox().x + player.GetSizeCollisionBox().x/2 ,player.GetPositionCollisionBox().y + player.GetSizeCollisionBox().y/2)),
+            sf::Vertex(sf::Vector2f(player.GetPositionCollisionBox().x+ player.GetSizeCollisionBox().x/2,player.GetPositionCollisionBox().y+ player.GetSizeCollisionBox().y/2) + m_rayDirection * (player.GetSizeCollisionBox().x/2)) // Adjust the length of the ray as needed
         };
 
     window.draw(line, 2, sf::Lines);
