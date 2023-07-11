@@ -45,15 +45,12 @@ void Player::ParsePlayerSprite(int xaxis, int yaxis, PlayerDir dir)
     sprite.setTexture(m_texture);
     sprite.setTextureRect(sf::IntRect(xaxis * PLAYEDIM, yaxis * PLAYEDIM, PLAYEDIM, PLAYEDIM));
     sprite.setScale(3.f, 3.f); // Scale the sprite to the desired size
-    
 
-    sprite.setOrigin(sf::Vector2f(10.f,6.f));
-     
+    sprite.setOrigin(sf::Vector2f(10.f, 6.f));
+
     sprite.setPosition(m_position);
 
-
     m_sprites.insert(std::make_pair(dir, sprite));
-
 }
 
 void Player::UpdateForwardMovement(sf::Time &elapsed_time, sf::Event &event)
@@ -147,16 +144,14 @@ void Player::UpdateJumpingMechanics(sf::Time &elapsed_time, sf::Event &event)
         }
     }
     UpdatePhysics(elapsed_time);
-    
 }
 
 void Player::updateCollitionBox()
 {
     m_collition_box.left = m_drawn_sprite.getGlobalBounds().left + PLAYEDIM; // OFFSET to collition;
-    m_collition_box.top = m_drawn_sprite.getGlobalBounds().top + 20.f;              // OFFSET to collition;
+    m_collition_box.top = m_drawn_sprite.getGlobalBounds().top + 20.f;       // OFFSET to collition;
     m_collition_box.height = m_drawn_sprite.getGlobalBounds().height - 22.f;
     m_collition_box.width = m_drawn_sprite.getGlobalBounds().width - 2 * PLAYEDIM;
-
 }
 
 void Player::UpdatePhysics(sf::Time &elapsed_time)
@@ -213,7 +208,60 @@ void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
 {
     if (m_collition_box.intersects(sprite.getGlobalBounds()))
     {
-        std::cout << "INtersection happended" << std::endl;
+        std::cout << "Collision occurred!" << std::endl;
+
+        // Calculate the overlap on both the X and Y axes
+        float overlapX = 0.f;
+        float overlapY = 0.f;
+
+        // Intersection Left side
+        if (m_collition_box.left < sprite.getGlobalBounds().left && m_collition_box.left + m_collition_box.width > sprite.getGlobalBounds().left)
+            overlapX = m_collition_box.left + m_collition_box.width - sprite.getGlobalBounds().left;
+        // Intersection Right side
+        else if (m_collition_box.left > sprite.getGlobalBounds().left && m_collition_box.left + m_collition_box.width > sprite.getGlobalBounds().left + sprite.getGlobalBounds().width)
+            overlapX = m_collition_box.left - (sprite.getGlobalBounds().left + sprite.getGlobalBounds().width);
+
+        // comming from bottom
+        if (m_collition_box.top < sprite.getGlobalBounds().top && m_collition_box.top + m_collition_box.height > sprite.getGlobalBounds().top)
+            overlapY = m_collition_box.top - (sprite.getGlobalBounds().top + sprite.getGlobalBounds().height);
+        // COmming from top
+        else if (m_collition_box.top < sprite.getGlobalBounds().top && m_collition_box.top + m_collition_box.height > sprite.getGlobalBounds().top + sprite.getGlobalBounds().height)
+            overlapY = m_collition_box.top + m_collition_box.height - (sprite.getGlobalBounds().top + sprite.getGlobalBounds().height);
+
+        // Resolve the collision based on the overlap direction
+        if (std::abs(overlapX) > std::abs(overlapY))
+        {
+            // Collision left
+            if (overlapX > 0.f)
+            {
+                // Collision from the right side of the platform
+                m_position = sf::Vector2f(sprite.getGlobalBounds().left - m_collition_box.width, m_collition_box.top);
+            }
+            // Collision right
+            else
+            {
+                // Collision from the left side of the platform
+                m_position = sf::Vector2f(sprite.getGlobalBounds().left + sprite.getGlobalBounds().width, m_collition_box.top);
+            }
+
+            // Set player's horizontal velocity to zero
+            this->ResetVelocityHorizontal();
+        }
+        else
+        {
+            // Collision from top
+            if (overlapY > 0.f)
+            {
+                m_position = sf::Vector2f(m_collition_box.left, sprite.getGlobalBounds().top - m_collition_box.height);
+            }
+            // Collision from bottom
+            else
+            {
+                // Collision from below the platform
+                m_position = sf::Vector2f(m_collition_box.left, sprite.getGlobalBounds().top + sprite.getGlobalBounds().height);
+                this->ResetVelocityVertical();
+            }
+        }
     }
 }
 
@@ -278,6 +326,11 @@ void Player::SetGroundLevel(sf::Vector2f ground_level)
     m_ground_level = ground_level;
 }
 
+void Player::ResetVelocityHorizontal()
+{
+    m_horizontalaccelaration = 0;
+}
+
 void Player::setRayDirection(const sf::Vector2f &targetPosition)
 {
 }
@@ -324,8 +377,8 @@ void Ray::drawRay(sf::RenderWindow &window, const Player &player)
 {
     sf::Vertex line[] =
         {
-            sf::Vertex(sf::Vector2f(player.GetPositionCollisionBox().x + player.GetSizeCollisionBox().x/2 ,player.GetPositionCollisionBox().y + player.GetSizeCollisionBox().y/2)),
-            sf::Vertex(sf::Vector2f(player.GetPositionCollisionBox().x+ player.GetSizeCollisionBox().x/2,player.GetPositionCollisionBox().y+ player.GetSizeCollisionBox().y/2) + m_rayDirection * (player.GetSizeCollisionBox().x/2)) // Adjust the length of the ray as needed
+            sf::Vertex(sf::Vector2f(player.GetPositionCollisionBox().x + player.GetSizeCollisionBox().x / 2, player.GetPositionCollisionBox().y + player.GetSizeCollisionBox().y / 2)),
+            sf::Vertex(sf::Vector2f(player.GetPositionCollisionBox().x + player.GetSizeCollisionBox().x / 2, player.GetPositionCollisionBox().y + player.GetSizeCollisionBox().y / 2) + m_rayDirection * (player.GetSizeCollisionBox().x / 2)) // Adjust the length of the ray as needed
         };
 
     window.draw(line, 2, sf::Lines);

@@ -55,6 +55,7 @@ public:
     // Setter
     void SetPosition(sf::Vector2f position);
     void ResetVelocityVertical();
+    void ResetVelocityHorizontal();
     void SetGroundLevel(sf::Vector2f ground_level);
     void setRayDirection(const sf::Vector2f &targetPosition);
 
