@@ -50,6 +50,9 @@ public:
     const float GetHorizontalVelocity() const;
     const sf::Vector2f GetPositionCollisionBox() const;
     const sf::Vector2f GetSizeCollisionBox() const;
+    const sf::Vector2f GetCenterCollisionBox() const;
+    const sf::Vector2f GetHalfSizeCollisionBox() const;
+
 
 
     // Setter
