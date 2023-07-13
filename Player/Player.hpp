@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.hpp"
 #include "SFML/Graphics.hpp"
+#include "Collision.hpp"
 
 enum class PlayerDir
 {
@@ -61,6 +62,8 @@ public:
     void ResetVelocityHorizontal();
     void SetGroundLevel(sf::Vector2f ground_level);
     void setRayDirection(const sf::Vector2f &targetPosition);
+
+    Collider GetCollider();
 
 private:
     // Variables to move sprite

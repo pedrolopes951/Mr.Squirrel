@@ -23,6 +23,7 @@ add_definitions(-DFONTPATH="${CMAKE_BINARY_DIR}/Fonts/")
 add_subdirectory(utils)
 add_subdirectory(Engine)
 add_subdirectory(Enteties)
+add_subdirectory(Collision)
 add_subdirectory(Executable)
 add_subdirectory(Player)
 

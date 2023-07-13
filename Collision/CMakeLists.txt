@@ -1,16 +1,14 @@
 # Add source files
 set(SOURCES 
-    Player.cpp)
+    Collision.cpp)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/PreCompiledHeader)
 include_directories(${CMAKE_SOURCE_DIR}/utils)
-include_directories(${CMAKE_SOURCE_DIR}/Collision)
-
 
 # Create library
-add_library(Player ${SOURCES})
+add_library(Collision ${SOURCES})
 
 
 # Link SFML libraries
-target_link_libraries(Player PUBLIC MyPCH ${SFML_LIBS} utils Collision) 
+target_link_libraries(Collision PUBLIC MyPCH ${SFML_LIBS} ${OpenCV_LIBS} utils)

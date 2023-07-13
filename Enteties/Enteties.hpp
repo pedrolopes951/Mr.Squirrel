@@ -3,10 +3,8 @@
 #include <opencv4/opencv2/opencv.hpp>
 #include "Runtime.hpp"
 
-
 namespace Map
 {
-
     struct MapBackground
     {
         /// @brief Build the Map Enteties with the texture and sprites for ther background of the game
@@ -62,18 +60,18 @@ namespace Map
         Platform(const cv::Mat &tile);
         void draw(sf::RenderWindow *window) override;
         void updateTiles(const sf::View &window_view) override;
-
         const std::vector<sf::Sprite> &getSprite() const override;
         ~Platform(){};
 
     private:
-        enum class Scenes{
+        enum class Scenes
+        {
             SCENE1,
             SCENE2,
             SCENE3,
             NUMBERSCENES
         };
-        void createScenes(const sf::View  * window);
+        void createScenes(const sf::View *window);
         sf::Texture m_texture;
         sf::Sprite m_sprite;
         std::vector<sf::Sprite> m_sprites_vec{};
@@ -121,3 +119,4 @@ namespace Map
         }
     };
 }
+

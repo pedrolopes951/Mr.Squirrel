@@ -295,6 +295,11 @@ void Player::setRayDirection(const sf::Vector2f &targetPosition)
 {
 }
 
+Collider Player::GetCollider()
+{
+    return Collider(m_collition_box);
+}
+
 Player::~Player()
 {
 }
