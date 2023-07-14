@@ -206,11 +206,21 @@ void Player::update(sf::Time &elapsed_time, sf::Event &events)
 
 void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
 {
-    if (m_collition_box.intersects(sprite.getGlobalBounds()))
-    {
+    // if (m_collition_box.intersects(sprite.getGlobalBounds()))
+    // {
         
+    // }
+    // Create two Collision class
+    Collider player = Collider(m_collition_box);
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+    Collider plat = Collider(bounds);
+    if(player.CheckCollision(plat,0.f))
+    {
+        this->SetPosition(sf::Vector2f(m_collition_box.left,m_collition_box.top));   
     }
+
 }
+
 
 void Player::checkCollitionsFloorTiles(const sf::Sprite &sprite)
 {
@@ -293,11 +303,6 @@ void Player::ResetVelocityHorizontal()
 
 void Player::setRayDirection(const sf::Vector2f &targetPosition)
 {
-}
-
-Collider Player::GetCollider()
-{
-    return Collider(m_collition_box);
 }
 
 Player::~Player()

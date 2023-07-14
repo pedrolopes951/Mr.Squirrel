@@ -63,7 +63,7 @@ public:
     void SetGroundLevel(sf::Vector2f ground_level);
     void setRayDirection(const sf::Vector2f &targetPosition);
 
-    Collider GetCollider();
+    
 
 private:
     // Variables to move sprite
