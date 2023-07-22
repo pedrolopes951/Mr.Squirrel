@@ -210,7 +210,6 @@ void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
     // {
         
     // }
-    // Create two Collision class
     Collider player = Collider(m_collition_box);
     sf::FloatRect bounds = sprite.getGlobalBounds();
     Collider plat = Collider(bounds);

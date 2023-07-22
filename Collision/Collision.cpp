@@ -28,22 +28,22 @@ bool Collider::CheckCollision(Collider &other, float push)
         {
             if (delta_x > 0.f)
             {
-                this->Move(intersect_x * (1.0f - push), 0.0f);
+                this->Move(intersect_x * (1.0f - push) * 0.f, 0.0f);
                 other.Move(-intersect_x*push, 0.0f);
             }
             else {
-                this->Move(-intersect_x * (1.0f - push), 0.0f);
+                this->Move(-intersect_x * (1.0f - push)*0.f, 0.0f);
                 other.Move(intersect_x*push, 0.0f);
             }
         }
         else{
               if (delta_y > 0.f)
             {
-                this->Move(intersect_y * (1.0f - push), 0.0f);
+                this->Move(intersect_y * (1.0f - push)*0.f, 0.0f);
                 other.Move(-intersect_y*push, 0.0f);
             }
             else {
-                this->Move(-intersect_y * (1.0f - push), 0.0f);
+                this->Move(-intersect_y * (1.0f - push)*0.f, 0.0f);
                 other.Move(intersect_y*push, 0.0f);
             }
         }
