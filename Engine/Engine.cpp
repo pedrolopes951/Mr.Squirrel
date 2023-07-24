@@ -57,8 +57,8 @@ void Engine::run()
         sf::Time elapsed = clock.restart();
         this->updatePollEvents();
         this->update(elapsed);
-        std::cout << "Player Position x: " << m_main_player->GetPosition().x << std::endl;
-        std::cout << "Player Position y: " << m_main_player->GetPosition().y << std::endl;
+        // std::cout << "Player Position x: " << m_main_player->GetPosition().x << std::endl;
+        // std::cout << "Player Position y: " << m_main_player->GetPosition().y << std::endl;
         this->render();
     }
 }
@@ -134,9 +134,9 @@ void Engine::updateColision()
         }
         if (tile_type == Map::FloorType::PLATFORM)
         {
-            for (const auto &floor_tile : tile->getSprite())
+            for (const auto &tile_plat : tile->getSprite())
             {
-                m_main_player->checkCollitionsPlatTiles(floor_tile);
+                m_main_player->checkCollitionsPlatTiles(tile_plat);
             }
         }
     }

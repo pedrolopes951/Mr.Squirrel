@@ -213,7 +213,7 @@ void Player::checkCollitionsPlatTiles(const sf::Sprite &sprite)
     Collider player = Collider(m_collition_box);
     sf::FloatRect bounds = sprite.getGlobalBounds();
     Collider plat = Collider(bounds);
-    if(player.CheckCollision(plat,0.f))
+    if(player.CheckCollision(plat) != Collision::NOCOLLISION)
     {
         this->SetPosition(sf::Vector2f(m_collition_box.left,m_collition_box.top));   
     }
