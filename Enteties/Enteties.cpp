@@ -66,31 +66,13 @@ namespace Map
             window->draw(*it);
         }
     }
-    Floor::Floor(const cv::Mat &tile)
+    Floor::Floor(const sf::Texture &tileTexture)
     {
-        sf::Image sfml_image; // Create a sfml image with the dimention of the pixels matrix of the cv object
-        sfml_image.create(tile.cols, tile.rows);
-
-        // Iterate over each pixel in the tile matrix
-        for (int y = 0; y < tile.rows; y++)
-        {
-            for (int x = 0; x < tile.cols; x++)
-            {
-                // Retrieve the color value of the current pixel
-                cv::Vec3b color = tile.at<cv::Vec3b>(y, x);
-
-                // Create an SFML color using the RGB values from the OpenCV color channels
-                sf::Color sfml_color(color[2], color[1], color[0]);
-
-                // Set the pixel at (x, y) in the SFML image with the corresponding SFML color
-                sfml_image.setPixel(x, y, sfml_color);
-            }
-        }
-
-        m_texture.loadFromImage(sfml_image);
+        m_texture = tileTexture;
         m_sprite.setTexture(m_texture);
 
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
+
         // Build the vector of floor tiles
         int numberTiles = WINDOWX / FLOORSIZESQUARE;
         for (int i = 0; i < numberTiles + 1; i++)
@@ -136,33 +118,14 @@ namespace Map
     {
     }
 
-    Platform::Platform(const cv::Mat &tile)
+    Platform::Platform(const sf::Texture &tileTexture)
     {
-        sf::Image sfml_image; // Create a sfml image with the dimention of the pixels matrix of the cv object
-        sfml_image.create(tile.cols, tile.rows);
-
-        // Iterate over each pixel in the tile matrix
-        for (int y = 0; y < tile.rows; y++)
-        {
-            for (int x = 0; x < tile.cols; x++)
-            {
-                // Retrieve the color value of the current pixel
-                cv::Vec3b color = tile.at<cv::Vec3b>(y, x);
-
-                // Create an SFML color using the RGB values from the OpenCV color channels
-                sf::Color sfml_color(color[2], color[1], color[0]);
-
-                // Set the pixel at (x, y) in the SFML image with the corresponding SFML color
-                sfml_image.setPixel(x, y, sfml_color);
-            }
-        }
-
-        m_texture.loadFromImage(sfml_image);
+        m_texture = tileTexture;
         m_sprite.setTexture(m_texture);
         m_sprite.setScale(FLOORSIZESQUARE / m_texture.getSize().x, FLOORSIZESQUARE / m_texture.getSize().y);
         // First location for drawing tiles is last place of the tile
         m_last_tile_pos_x = WINDOWX;
-    };
+    }
     void Platform::updateTiles(const sf::View &window_view)
     {
         // Get View Position and place the tiles only on the view is passed the first window size
@@ -208,7 +171,7 @@ namespace Map
             {
                 sf::Sprite sprite;
                 sprite = m_sprite;
-                float x = m_last_tile_pos_x + (window->getSize().x ) + (i + 1) * sprite.getGlobalBounds().width;
+                float x = m_last_tile_pos_x + (window->getSize().x) + (i + 1) * sprite.getGlobalBounds().width;
                 float y = 400.f;
                 sprite.setPosition(x, y);
                 m_sprites_vec.push_back(sprite);
@@ -221,7 +184,7 @@ namespace Map
             {
                 sf::Sprite sprite;
                 sprite = m_sprite;
-                float x = m_last_tile_pos_x + (window->getSize().x ) + (i + 1) * sprite.getGlobalBounds().width;
+                float x = m_last_tile_pos_x + (window->getSize().x) + (i + 1) * sprite.getGlobalBounds().width;
                 float y = 400.f;
                 sprite.setPosition(x, y);
                 m_sprites_vec.push_back(sprite);
@@ -232,14 +195,12 @@ namespace Map
         }
     }
 
-    Wall::Wall(const cv::Mat &tile)
+    Wall::Wall(const sf::Texture &tileTexture)
     {
-        sf::Image sfml_imag;
-        sfml_imag.create(tile.cols, tile.rows, tile.ptr());
-
-        m_texture.loadFromImage(sfml_imag);
+        m_texture = tileTexture;
         m_sprite.setTexture(m_texture);
     }
+
     void Wall::updateTiles(const sf::View &window_view)
     {
         // Get View Position and place the tiles only on the view of it

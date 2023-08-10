@@ -16,21 +16,27 @@ void Engine::InitMap()
 
 void Engine::InitTiles()
 {
-    // Load the image using OpenCV
-    cv::Mat image_floor = cv::imread(TexturesPATH + std::string("Tiles/Grass/Grass_13-128x128.png"), cv::IMREAD_COLOR);
-    cv::Mat image_platform = cv::imread(TexturesPATH + std::string("Tiles/Bricks/Bricks_01-128x128.png"), cv::IMREAD_COLOR);
-
-    if (image_floor.empty() || image_platform.empty())
+    // Load textures using SFML
+    sf::Texture texture_floor;
+    if (!texture_floor.loadFromFile(TexturesPATH + std::string("Tiles/Grass/Grass_13-128x128.png")))
     {
-        std::cerr << "Failed to load the image." << std::endl;
-        throw(std::string("Failed to load the image."));
+        std::cerr << "Failed to load the floor texture." << std::endl;
+        throw std::runtime_error("Failed to load the floor texture.");
     }
 
+    sf::Texture texture_platform;
+    if (!texture_platform.loadFromFile(TexturesPATH +  std::string("Tiles/Bricks/Bricks_01-128x128.png")))
+    {
+        std::cerr << "Failed to load the platform texture." << std::endl;
+        throw std::runtime_error("Failed to load the platform texture.");
+    }
+
+    
     // Floor
-    m_tiles[Map::FloorType::FLOOR] = Map::TileFactory::createTile(image_floor, Map::FloorType::FLOOR);
+    m_tiles[Map::FloorType::FLOOR] = Map::TileFactory::createTile(texture_floor, Map::FloorType::FLOOR);
 
     // Platform
-    m_tiles[Map::FloorType::PLATFORM] = Map::TileFactory::createTile(image_platform, Map::FloorType::PLATFORM);
+    m_tiles[Map::FloorType::PLATFORM] = Map::TileFactory::createTile(texture_platform, Map::FloorType::PLATFORM);
 
 
 }

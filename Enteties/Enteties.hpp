@@ -1,6 +1,6 @@
 #include "stdafx.hpp"
 #include "SFML/Graphics.hpp"
-#include <opencv4/opencv2/opencv.hpp>
+// #include <opencv4/opencv2/opencv.hpp>
 #include "Runtime.hpp"
 
 namespace Map
@@ -43,7 +43,7 @@ namespace Map
 
     struct Floor : public ITiles
     {
-        Floor(const cv::Mat &tile);
+        Floor(const sf::Texture &tile);
         ~Floor();
         void draw(sf::RenderWindow *window);
         void updateTiles(const sf::View &window_view) override;
@@ -57,7 +57,7 @@ namespace Map
 
     struct Platform : public ITiles
     {
-        Platform(const cv::Mat &tile);
+        Platform(const sf::Texture &tile);
         void draw(sf::RenderWindow *window) override;
         void updateTiles(const sf::View &window_view) override;
         const std::vector<sf::Sprite> &getSprite() const override;
@@ -80,7 +80,7 @@ namespace Map
     struct Wall : public ITiles
     {
 
-        Wall(const cv::Mat &tile);
+        Wall(const sf::Texture &tile);
         void draw(sf::RenderWindow *window) override;
         void updateTiles(const sf::View &window_view) override;
 
@@ -96,27 +96,22 @@ namespace Map
     struct TileFactory
     {
     public:
-        static ITiles *createTile(const cv::Mat &tile, FloorType type)
+        static ITiles *createTile(const sf::Texture &texture, FloorType type)
         {
-
-            // Look at type of floor
             switch (type)
             {
             case FloorType::FLOOR:
-                // Parse here the position to create the tiledata to build he floor
-                return new Floor(tile);
-                break;
+                return new Floor(texture);
             case FloorType::PLATFORM:
-                /*TODO*/
-                return new Platform(tile);
-                break;
+                /*TODO: Create a Platform tile using the texture */
+                return new Platform(texture);
             case FloorType::WALL:
-                return new Wall(tile);
+                return new Wall(texture);
             default:
-                std::cerr << "Error, not valid Grid";
+                std::cerr << "Error, not a valid Grid" << std::endl;
                 return nullptr;
             }
         }
     };
-}
 
+}
