@@ -1,8 +1,5 @@
-# SIDE SCROLLER PROJ [ In Development]
+# SIDE SCROLLER PROJ 
 
-
-## Story Line
-The quest of a player, super-mario, side scrolling on a map of a city, running, jumping and fighting enemies to rescue a squirell in the end of each level.
 
 ![Screenshot](Game.png)
 
